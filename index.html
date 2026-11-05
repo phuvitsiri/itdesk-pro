@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT Service Desk Pro</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--line:#dfe1e6;--text:#172b4d;--muted:#6b778c;--nav:#172b4d;--hover:#f0f2f5;--act:#e9f2ff;--blue:#0c66e4;--soft:#f4f7fb;--input:#fff}
+body.dark{--bg:#101a2c;--card:#1b2740;--line:#2f3d5c;--text:#e6ecf7;--muted:#97a6c3;--nav:#0b1322;--hover:#24324f;--act:#1d3a66;--blue:#5aa2ff;--soft:#22304d;--input:#14203a}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+header{height:60px;background:var(--nav);color:#fff;display:flex;align-items:center;padding:0 18px;gap:14px;position:sticky;top:0;z-index:30}
+.logo{font-size:20px;font-weight:bold;white-space:nowrap}.logo span{color:#79b8ff}.logo small{font-size:10px;opacity:.7;margin-left:4px}
+.gsearch{flex:1;max-width:380px}.gsearch input{width:100%;background:#ffffff22;border:1px solid #ffffff33;color:#fff;border-radius:6px;padding:8px 12px}
+.gsearch input::placeholder{color:#cbd5e6}
+.hright{margin-left:auto;display:flex;align-items:center;gap:10px}
+.hright select{background:#ffffff22;color:#fff;border:1px solid #ffffff33;border-radius:6px;padding:7px}
+.hright select option{color:#172b4d}
+.iconbtn{background:#ffffff22;color:#fff;border-radius:6px;padding:8px 11px;position:relative}
+.badge{position:absolute;top:-5px;right:-5px;background:#e5484d;color:#fff;border-radius:10px;font-size:10px;padding:1px 5px}
+.layout{display:flex;min-height:calc(100vh - 60px)}
+aside{width:225px;background:var(--card);border-right:1px solid var(--line);padding:14px 10px;flex-shrink:0;overflow:auto}
+.navtitle{font-size:10px;color:var(--muted);font-weight:bold;padding:14px 10px 6px;letter-spacing:.5px}
+.nav{display:block;padding:9px 11px;border-radius:6px;margin:2px 0;cursor:pointer;font-size:13px;color:var(--text);text-decoration:none}
+.nav:hover{background:var(--hover)}.nav.active{background:var(--act);color:var(--blue);font-weight:bold}
+main{padding:24px;width:100%;min-width:0;max-width:1500px;margin:0 auto}
+.heading{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+h1{font-size:24px;margin:0 0 4px}.muted{font-size:12px;color:var(--muted)}
+button{border:0;border-radius:5px;padding:9px 13px;cursor:pointer;font-weight:bold;font-family:inherit;font-size:13px}
+.primary{background:var(--blue);color:#fff}.primary:hover{filter:brightness(.92)}
+.secondary{background:var(--card);border:1px solid var(--line);color:var(--text)}
+.danger{background:#ffebe6;color:#bf2600}.success{background:#1f845a;color:#fff}
+.sm{padding:5px 9px;font-size:12px}
+input,select,textarea{padding:9px;border:1px solid var(--line);border-radius:5px;font:inherit;color:var(--text);background:var(--input)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.card{background:var(--card);padding:16px;border:1px solid var(--line);border-radius:8px}
+.card.click{cursor:pointer}.card.click:hover{border-color:var(--blue)}
+.card small{color:var(--muted);font-size:11px;font-weight:bold}
+.number{font-size:27px;font-weight:bold;margin-top:6px}
+.card.red .number{color:#e5484d}.card.amber .number{color:#d97706}.card.green .number{color:#1f845a}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:16px}
+.panel h3{margin:0 0 12px;font-size:15px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.toolbar input[type=search],.toolbar input.grow{flex:1;min-width:180px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{padding:6px 11px;border-radius:16px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:12px;font-weight:bold;color:var(--muted)}
+.chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:middle}
+th{background:var(--soft);color:var(--muted);font-size:10px;letter-spacing:.4px}
+tr:hover td{background:var(--hover)}
+.id{color:var(--blue);font-weight:bold;cursor:pointer;white-space:nowrap}
+.pill{padding:4px 8px;border-radius:4px;font-size:10px;font-weight:bold;display:inline-block;white-space:nowrap}
+.Critical{background:#ffebe6;color:#bf2600}.High{background:#fff0b3;color:#974f0c}.Medium{background:#deebff;color:#0747a6}.Low{background:#e3fcef;color:#006644}
+.Open{background:#deebff;color:#0747a6}.In-Progress{background:#eae6ff;color:#403294}.Pending{background:#fff0b3;color:#974f0c}.Resolved{background:#e3fcef;color:#006644}.Closed{background:#eee;color:#42526e}
+.Incident{background:#ffebe6;color:#bf2600}.Service-Request{background:#deebff;color:#0747a6}.Problem{background:#fff0b3;color:#974f0c}.Change{background:#eae6ff;color:#403294}
+.Available{background:#e3fcef;color:#006644}.Assigned{background:#deebff;color:#0747a6}.Repair{background:#fff0b3;color:#974f0c}.Retired{background:#eee;color:#42526e}
+.Draft{background:#eee;color:#42526e}.Published{background:#e3fcef;color:#006644}.Approved{background:#e3fcef;color:#006644}.Rejected{background:#ffebe6;color:#bf2600}
+.sla-ok,.sla-met{background:#e3fcef;color:#006644}.sla-warn{background:#fff0b3;color:#974f0c}.sla-breached{background:#ffebe6;color:#bf2600}.sla-paused{background:#eee;color:#42526e}
+.av{display:inline-flex;width:24px;height:24px;border-radius:50%;color:#fff;font-size:10px;font-weight:bold;align-items:center;justify-content:center;vertical-align:middle;margin-right:6px}.av.un{background:#97a0af}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}.field label{font-size:12px;font-weight:bold}
+.field input,.field select,.field textarea{width:100%}
+textarea{min-height:80px;resize:vertical}
+.modalback{display:none;position:fixed;inset:0;background:#091e4299;align-items:flex-start;justify-content:center;padding:30px 15px;z-index:50;overflow:auto}
+.modal{background:var(--card);width:min(640px,100%);border-radius:10px;padding:22px;margin:auto}.modal.wide{width:min(900px,100%)}
+.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.modalhead h2{font-size:19px;margin:0}
+.close{background:none;font-size:24px;color:var(--muted);padding:0}
+.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;flex-wrap:wrap}
+.empty{text-align:center;color:var(--muted);padding:26px}
+.bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden}.bar div{height:100%;background:var(--blue)}
+.bar.red div{background:#e5484d}.bar.amber div{background:#f59e0b}.bar.green div{background:#22a06b}
+.item{padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}.item:last-child{border:0}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.tag{font-size:11px;background:var(--soft);color:var(--muted);padding:2px 7px;border-radius:10px;margin-right:4px;display:inline-block}
+#toast{position:fixed;bottom:20px;right:20px;background:#172b4d;color:#fff;padding:12px 18px;border-radius:7px;display:none;z-index:99}
+.donutwrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.donut{width:130px;height:130px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.donut>div{width:84px;height:84px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold}
+.legend div{font-size:12px;margin:4px 0}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}.legend b{margin-left:6px}
+.trend{width:100%;height:auto;color:var(--text)}
+.hbar{margin:9px 0;font-size:12px}.hbar .row{margin-bottom:3px}
+.board{display:grid;grid-template-columns:repeat(5,minmax(210px,1fr));gap:10px;overflow-x:auto;align-items:flex-start}
+.col{background:var(--soft);border-radius:8px;padding:8px;min-height:200px}
+.col h4{margin:4px 4px 8px;font-size:11px;color:var(--muted);letter-spacing:.5px;display:flex;justify-content:space-between}
+.kcard{background:var(--card);border:1px solid var(--line);border-left:4px solid #8993a4;border-radius:6px;padding:10px;margin-bottom:8px;cursor:grab;font-size:12px}
+.kcard.Critical{border-left-color:#e5484d;background:var(--card);color:var(--text)}.kcard.High{border-left-color:#f59e0b;background:var(--card);color:var(--text)}.kcard.Medium{border-left-color:#2684ff;background:var(--card);color:var(--text)}.kcard.Low{border-left-color:#22a06b;background:var(--card);color:var(--text)}
+.col.over{outline:2px dashed var(--blue)}
+.tview{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:8px 14px;cursor:pointer;font-weight:bold;font-size:13px;color:var(--muted);border-bottom:2px solid transparent}.tab.on{color:var(--blue);border-color:var(--blue)}
+.comment{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.comment .body{flex:1;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.comment.internal{background:#fff7d6;padding:12px;border-radius:6px;color:#172b4d}
+.dl{display:grid;grid-template-columns:105px 1fr;gap:8px 8px;font-size:12px;align-items:center}.dl>div:nth-child(odd){color:var(--muted);font-weight:bold}
+.dl select{width:100%;padding:6px}
+.stars button{background:none;font-size:24px;padding:0 2px;color:#c1c7d0}.stars button.on{color:#f59e0b}
+.notif{position:absolute;right:0;top:44px;width:340px;max-height:420px;overflow:auto;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px #0004;display:none;z-index:60}
+.notif div{padding:10px 12px;border-bottom:1px solid var(--line);font-size:12px;cursor:pointer}.notif div:hover{background:var(--hover)}
+.sugg{background:var(--soft);border-radius:6px;padding:8px 10px;font-size:12px;margin-bottom:10px}.sugg a{color:var(--blue);cursor:pointer;display:block;margin:3px 0;font-weight:bold}
+.sugbody{display:none;white-space:pre-wrap;padding:6px 8px;background:var(--card);border-radius:5px;margin-bottom:6px}
+.hero{background:linear-gradient(120deg,#0c66e4,#5aa2ff);color:#fff;border-radius:10px;padding:26px;margin-bottom:18px}
+.hero h2{margin:0 0 6px}
+.hero input{width:100%;max-width:480px;margin-top:10px}
+.drop{border:2px dashed var(--line);border-radius:8px;padding:16px;text-align:center;color:var(--muted);font-size:12px;margin-bottom:10px}
+.drop.over{border-color:var(--blue);background:var(--act)}
+.files{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.fcard{border:1px solid var(--line);border-radius:8px;padding:8px;font-size:12px;background:var(--soft)}
+.fthumb{width:100%;height:90px;object-fit:cover;border-radius:6px;cursor:pointer;background:var(--line)}
+.fico{height:90px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:var(--line);font-weight:bold;font-size:18px;cursor:pointer}
+.fname{margin:6px 0 2px;font-weight:bold;word-break:break-all}
+@media(max-width:1000px){.tview{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){aside{width:60px;padding:8px 4px}.nav{font-size:0}.nav::first-letter{font-size:16px}.navtitle{display:none}main{padding:14px}.grid2,.grid3{grid-template-columns:1fr}.gsearch{display:none}.board{grid-template-columns:repeat(5,230px)}}
+@media print{header,aside,.noprint,.actions,button{display:none!important}.layout{display:block}main{padding:0}body{background:#fff}}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo">IT<span>Desk</span><small>PRO</small></div>
+ <div class="gsearch"><input id="gs" placeholder="Search tickets  ( / )" onkeydown="if(event.key==='Enter')location.hash='#/tickets?q='+encodeURIComponent(this.value)"></div>
+ <div class="hright">
+  <button class="primary sm noprint" onclick="createTicket()">＋ Create</button>
+  <div style="position:relative"><button class="iconbtn" onclick="toggleNotif()">🔔<span class="badge" id="nbadge" style="display:none">0</span></button><div class="notif" id="notif"></div></div>
+  <button class="iconbtn" onclick="toggleTheme()" title="Dark / Light">◐</button>
+  <select id="meSel" onchange="switchUser(this.value)" title="Demo: switch user to test roles"></select>
+ </div>
+</header>
+<div class="layout"><aside id="nav"></aside><main id="content"></main></div>
+<div id="toast"></div>
+<div class="modalback" id="modal"><div class="modal" id="modalBox"><div class="modalhead"><h2 id="modalTitle"></h2><button class="close" onclick="closeModal()">×</button></div><div id="modalBody"></div></div></div>
+
+<script>
+/* ============ CONSTANTS ============ */
+const LS="itsm_v2_db",LSME="itsm_v2_me",LSTHEME="itsm_v2_theme";
+const STATUSES=["Open","In Progress","Pending","Resolved","Closed"];
+const PRIOS=["Critical","High","Medium","Low"];
+const TYPES=["Incident","Service Request","Problem","Change"];
+const LEVELS=["High","Medium","Low"];
+const ROLES=["Admin","Agent","Manager","Employee"];
+const GROUPS=["Helpdesk","Hardware","Network","Infrastructure","Security","Applications"];
+let DB=null,S={list:{}};
+
+/* ============ UTILS ============ */
+const $=id=>document.getElementById(id);
+const safe=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nl=v=>safe(v).replace(/\n/g,"<br>");
+const cls=v=>safe(String(v).replaceAll(" ","-"));
+const pill=v=>`<span class="pill ${cls(v)}">${safe(v)}</span>`;
+const opts=(arr,sel)=>arr.map(x=>`<option ${x===sel?"selected":""}>${safe(x)}</option>`).join("");
+const uopts=(list,sel,blank)=>(blank!==undefined?`<option value="">${safe(blank)}</option>`:"")+list.map(u=>`<option value="${safe(u.id)}" ${u.id===sel?"selected":""}>${safe(u.name)}</option>`).join("");
+const fmt=d=>d?new Date(d).toLocaleString("en-GB",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}):"-";
+const fmtD=d=>d?new Date(d).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}):"-";
+const iso=()=>new Date().toISOString();
+function fmtMin(m){m=Math.round(Math.abs(m));if(m<60)return m+"m";let h=Math.floor(m/60),r=m%60;if(h<24)return h+"h"+(r?" "+r+"m":"");let d=Math.floor(h/24);return d+"d "+(h%24)+"h"}
+function ago(d){let m=(Date.now()-new Date(d))/60000;if(m<1)return"just now";if(m<60)return Math.floor(m)+"m ago";if(m<1440)return Math.floor(m/60)+"h ago";return Math.floor(m/1440)+"d ago"}
+function toast(m){let e=$("toast");e.textContent=m;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display="none",2300)}
+function openModal(title,body,wide){$("modalTitle").textContent=title;$("modalBody").innerHTML=body;$("modalBox").className="modal"+(wide?" wide":"");$("modal").style.display="flex"}
+function closeModal(){$("modal").style.display="none"}
+function download(name,content,type){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function csv(name,rows){download(name,"\uFEFF"+rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n"),"text/csv;charset=utf-8")}
+function heading(t,d,btn=""){return `<div class="heading"><div><h1>${t}</h1><div class="muted">${d||""}</div></div><div class="noprint">${btn}</div></div>`}
+function card(l,n,c="",go=""){return `<div class="card ${c} ${go?"click":""}" ${go?`onclick="location.hash='#/${go}'"`:""}><small>${l}</small><div class="number">${n}</div></div>`}
+function tbl(h,rows,empty="No data"){return `<div class="tablewrap"><table><thead><tr>${h.map(x=>`<th>${x}</th>`).join("")}</tr></thead><tbody>${rows||`<tr><td colspan="${h.length}" class="empty">${empty}</td></tr>`}</tbody></table></div>`}
+function bar(p,c=""){return `<div class="bar ${c}"><div style="width:${Math.max(0,Math.min(100,p))}%"></div></div>`}
+function hbars(items,color){let mx=Math.max(1,...items.map(i=>i[1]));return items.map(([l,v])=>`<div class="hbar"><div class="row"><span>${safe(l)}</span><b>${v}</b></div>${bar(v/mx*100,color)}</div>`).join("")||'<div class="empty">No data</div>'}
+function donut(items){let tot=items.reduce((a,i)=>a+i[1],0),acc=0;let st=tot?items.map(([l,v,c])=>{let s=acc/tot*100;acc+=v;return `${c} ${s}% ${acc/tot*100}%`}).join(","):"var(--line) 0 100%";return `<div class="donutwrap"><div class="donut" style="background:conic-gradient(${st})"><div>${tot}</div></div><div class="legend">${items.map(([l,v,c])=>`<div><i style="background:${c}"></i>${safe(l)}<b>${v}</b></div>`).join("")}</div></div>`}
+function trend(days,a,b){let W=600,H=170,P=26,mx=Math.max(1,...a,...b);let x=i=>P+i*(W-2*P)/Math.max(1,days.length-1),y=v=>H-P-(v/mx)*(H-2*P);let pl=ar=>ar.map((v,i)=>x(i)+","+y(v)).join(" ");
+ return `<svg viewBox="0 0 ${W} ${H}" class="trend"><line x1="${P}" y1="${H-P}" x2="${W-P}" y2="${H-P}" stroke="currentColor" opacity=".2"/><polyline fill="none" stroke="#0c66e4" stroke-width="2.5" points="${pl(a)}"/><polyline fill="none" stroke="#22a06b" stroke-width="2.5" points="${pl(b)}"/>${days.map((d,i)=>i%Math.ceil(days.length/7)===0?`<text x="${x(i)}" y="${H-8}" font-size="10" text-anchor="middle" fill="currentColor" opacity=".6">${d}</text>`:"").join("")}<text x="${P}" y="12" font-size="11" fill="#0c66e4">● Created</text><text x="${P+70}" y="12" font-size="11" fill="#22a06b">● Resolved</text></svg>`}
+function refocus(id){let e=$(id);if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length)}}
+
+/* ============ DATA ============ */
+function load(){try{let d=JSON.parse(localStorage.getItem(LS));if(d&&d.tickets)return d}catch(e){}return null}
+function save(){try{localStorage.setItem(LS,JSON.stringify(DB))}catch(e){toast("Storage full / unavailable")}}
+const U=id=>DB.users.find(u=>u.id===id),uname=id=>U(id)?.name||"Unassigned",T=id=>DB.tickets.find(t=>t.id===id),A=id=>DB.assets.find(a=>a.id===id);
+const me=()=>U(DB.meId)||DB.users[0];
+const isStaff=u=>["Admin","Agent","Manager"].includes((u||me()).role);
+const canWork=u=>["Admin","Agent"].includes((u||me()).role);
+const isOpen=t=>!["Resolved","Closed"].includes(t.status);
+function hist(t,by,text){(t.history=t.history||[]).unshift({at:iso(),by,text})}
+function audit(action,ref){DB.logs.unshift({at:iso(),by:DB.meId,action,ref:ref||""});if(DB.logs.length>1000)DB.logs.length=1000}
+function nextId(date){let y=new Date(date).getFullYear();DB.seq[y]=(DB.seq[y]||0)+1;return `IT-${y}-${String(DB.seq[y]).padStart(6,"0")}`}
+function nextAsset(){let n=Math.max(0,...DB.assets.map(a=>Number(a.id.split("-")[1])||0))+1;return "AST-"+String(n).padStart(4,"0")}
+function calcPriority(i,u){let s=LEVELS.length-LEVELS.indexOf(i)+LEVELS.length-LEVELS.indexOf(u);return s>=6?"Critical":s===5?"High":s>=3?"Medium":"Low"}
+
+function defaults(){return{bizStart:8,bizEnd:17,workdays:[1,2,3,4,5],autoCloseDays:3,warnPct:75,
+ sla:{Critical:{resp:15,res:240},High:{resp:60,res:480},Medium:{resp:240,res:960},Low:{resp:480,res:2400}},
+ categories:["Network","Hardware","Software","Account & Access","Email","Security","Server & Infrastructure","Other"],
+ canned:[{title:"Received",text:"ได้รับเรื่องแล้ว ทีม IT กำลังตรวจสอบ จะแจ้งความคืบหน้าให้ทราบโดยเร็ว"},{title:"Need info",text:"รบกวนแจ้งรายละเอียดเพิ่มเติม เช่น เวลาที่เกิดปัญหา, ข้อความ error หรือภาพหน้าจอ"},{title:"Resolved - confirm",text:"ดำเนินการแก้ไขเรียบร้อยแล้ว กรุณาตรวจสอบและกดยืนยันปิดงาน หากยังมีปัญหาสามารถเปิดงานใหม่ได้"}]}}
+
+function seed(){
+ DB={meId:"U1",seq:{},logs:[],settings:defaults(),tickets:[],
+ users:[
+ {id:"U1",name:"Administrator",email:"admin@company.com",role:"Admin",department:"IT",group:"Infrastructure",active:true},
+ {id:"U2",name:"Somchai P.",email:"somchai@company.com",role:"Agent",department:"IT",group:"Helpdesk",active:true},
+ {id:"U3",name:"Malee K.",email:"malee@company.com",role:"Agent",department:"IT",group:"Hardware",active:true},
+ {id:"U4",name:"Anan S.",email:"anan@company.com",role:"Agent",department:"IT",group:"Network",active:true},
+ {id:"U5",name:"Wipa T.",email:"wipa@company.com",role:"Manager",department:"IT",group:"",active:true},
+ {id:"U6",name:"Nattapong R.",email:"nattapong@company.com",role:"Employee",department:"Sales",group:"",active:true},
+ {id:"U7",name:"Kanya M.",email:"kanya@company.com",role:"Employee",department:"HR",group:"",active:true},
+ {id:"U8",name:"Pranee L.",email:"pranee@company.com",role:"Employee",department:"Finance",group:"",active:true},
+ {id:"U9",name:"Monitoring",email:"monitor@company.com",role:"Employee",department:"System",group:"",active:true}],
+ assets:[
+ {id:"AST-0001",name:"Dell Latitude 5440",type:"Laptop",serial:"DL001",owner:"U6",status:"Assigned",location:"Sales Floor 2",purchase:"2024-03-10",warranty:"2027-03-10"},
+ {id:"AST-0002",name:"HP LaserJet Pro M404",type:"Printer",serial:"HP002",owner:"",status:"Available",location:"HR Office",purchase:"2022-06-01",warranty:"2026-12-01"},
+ {id:"AST-0003",name:"Dell PowerEdge R750",type:"Server",serial:"SRV003",owner:"",status:"Assigned",location:"Data Center",purchase:"2023-01-15",warranty:"2026-11-20"},
+ {id:"AST-0004",name:"Lenovo ThinkPad T14",type:"Laptop",serial:"LN004",owner:"U8",status:"Repair",location:"Finance",purchase:"2021-09-01",warranty:"2024-09-01"}],
+ articles:[
+ {id:"KB-001",title:"วิธีแก้ปัญหา Internet ใช้ไม่ได้",category:"Network",status:"Published",views:42,helpful:9,nothelp:1,updated:iso(),body:"1. ตรวจสอบสาย LAN หรือสถานะ WiFi\n2. เปิด Command Prompt พิมพ์ ipconfig ตรวจสอบ IP / Gateway\n3. ลอง ping 8.8.8.8 และ ping google.com\n4. ถ้า ping IP ได้แต่ชื่อไม่ได้ แสดงว่าเป็นปัญหา DNS\n5. หากยังไม่ได้ ติดต่อ IT Helpdesk"},
+ {id:"KB-002",title:"วิธีแก้ปัญหา Printer ไม่พิมพ์",category:"Hardware",status:"Published",views:31,helpful:6,nothelp:0,updated:iso(),body:"1. ตรวจสอบ Power และสายเชื่อมต่อ\n2. เปิด Print Queue แล้วลบงานที่ค้าง\n3. Restart Print Spooler service\n4. ลองพิมพ์ Test Page"},
+ {id:"KB-003",title:"ลืมรหัสผ่าน / Account ถูกล็อก",category:"Security",status:"Published",views:77,helpful:20,nothelp:2,updated:iso(),body:"1. เข้าหน้า Self-service password reset\n2. ยืนยันตัวตนด้วย OTP\n3. หาก Account ถูกล็อก รอ 15 นาที หรือแจ้ง IT Helpdesk"},
+ {id:"KB-004",title:"การเชื่อมต่อ VPN จากที่บ้าน",category:"Network",status:"Published",views:25,helpful:5,nothelp:1,updated:iso(),body:"1. ติดตั้ง VPN Client ตามคู่มือ\n2. ใส่ Server address ที่ได้รับจาก IT\n3. Login ด้วย Username/Password ของบริษัท + OTP"}]};
+ let now=Date.now(),M=60000;
+ const S0=[
+ ["Server CPU usage 95%","Monitoring alert: CPU usage of PROD-APP01 above 95% for 20 minutes.","Incident","Server & Infrastructure","High","High","U9","U1","In Progress",150,"AST-0003"],
+ ["Request new laptop for new hire","New employee starts next Monday, needs laptop + accessories.","Service Request","Hardware","Medium","Medium","U7","","Open",300,""],
+ ["Internet connection is down (Sales Floor 2)","Cannot connect to office internet since this morning.","Incident","Network","High","High","U6","U4","In Progress",95,""],
+ ["Printer cannot print","Printer is not responding at HR office.","Incident","Hardware","Low","Medium","U7","U3","Resolved",4300,"AST-0002"],
+ ["Forgot password - Finance system","Account locked after several attempts.","Incident","Account & Access","Low","High","U8","U2","Closed",5800,""],
+ ["Install Adobe Acrobat Pro","Need Acrobat Pro for contract editing.","Service Request","Software","Low","Low","U8","U2","Pending",2900,""],
+ ["Email cannot send attachments > 10MB","Outlook rejects large attachments.","Incident","Email","Medium","Medium","U6","U2","Open",1900,""],
+ ["Open new VPN account for contractor","Contractor Mr.Lee needs VPN for 3 months.","Service Request","Network","Medium","Low","U7","U4","In Progress",1300,""],
+ ["Recurring WiFi drops on floor 3","Multiple users report WiFi disconnects - suspected AP firmware.","Problem","Network","High","Medium","U1","U4","In Progress",8600,""],
+ ["Upgrade file server storage (Change)","Add 4TB storage to FS01. Planned maintenance Saturday.","Change","Server & Infrastructure","Medium","Medium","U1","U1","Open",1500,"AST-0003"],
+ ["Laptop screen flickering","Screen flickers when on battery power.","Incident","Hardware","Medium","High","U8","U3","Open",700,"AST-0004"],
+ ["Cannot access shared drive","Access denied to \\\\fs01\\finance.","Incident","Account & Access","Medium","Medium","U8","U2","Resolved",3100,""]];
+ S0.reverse().forEach(s=>{
+  let created=new Date(now-s[9]*M).toISOString();
+  let t={id:nextId(created),summary:s[0],description:s[1],type:s[2],category:s[3],impact:s[4],urgency:s[5],priority:calcPriority(s[4],s[5]),status:"Open",reporter:s[6],assignee:s[7]||null,group:s[7]?U(s[7]).group:"",assetId:s[10],tags:[],created,updated:created,firstResponseAt:null,resolvedAt:null,closedAt:null,pauses:[],comments:[],history:[],resolution:"",timeSpent:0,watchers:[],links:[],files:[],csat:null};
+  hist(t,s[6],"Ticket created");t.history[0].at=created;
+  if(s[2]==="Change")t.approval={status:"Pending"};
+  if(s[8]!=="Open"&&s[7]){t.firstResponseAt=new Date(+new Date(created)+12*M).toISOString()}
+  if(s[8]==="In Progress")t.status="In Progress";
+  if(s[8]==="Pending"){t.status="Pending";t.pauses.push({from:new Date(+new Date(created)+60*M).toISOString(),to:null})}
+  if(s[8]==="Resolved"||s[8]==="Closed"){t.status=s[8];t.resolvedAt=new Date(+new Date(created)+200*M).toISOString();t.resolution="ตรวจสอบและแก้ไขเรียบร้อยแล้ว";if(s[8]==="Closed"){t.closedAt=new Date(+new Date(created)+1500*M).toISOString();t.csat={rating:5,comment:"รวดเร็ว ขอบคุณครับ",at:t.closedAt}}}
+  if(s[7])t.comments.push({id:"c"+Math.random().toString(36).slice(2,8),by:s[7],text:"ได้รับเรื่องแล้ว กำลังตรวจสอบครับ",internal:false,at:t.firstResponseAt||created});
+  DB.tickets.unshift(t)});
+ DB.tickets.sort((a,b)=>b.id.localeCompare(a.id));
+ audit("Seeded demo data");save()}
+
+function init(){
+ DB=load();if(!DB)seed();
+ DB.meId=localStorage.getItem(LSME)||DB.meId;if(!U(DB.meId))DB.meId=DB.users[0].id;
+ if(localStorage.getItem(LSTHEME)==="dark")document.body.classList.add("dark");
+ autoClose();renderHeader();route()}
+
+function autoClose(){let n=0,lim=DB.settings.autoCloseDays*86400000;DB.tickets.forEach(t=>{if(t.status==="Resolved"&&t.resolvedAt&&Date.now()-new Date(t.resolvedAt)>lim){setStatus(t,"Closed",null);hist(t,null,"Auto-closed (no response after resolution)");n++}});if(n){audit("Auto-closed "+n+" ticket(s)");save()}}
+
+/* ============ BUSINESS-HOURS SLA ENGINE ============ */
+const isWork=d=>DB.settings.workdays.includes(d.getDay());
+function at(d,h){let x=new Date(d);x.setHours(Math.floor(h),Math.round((h%1)*60),0,0);return x}
+function biz(a,b){a=new Date(a);b=new Date(b);if(b<=a)return 0;let m=0,g=0,d=new Date(a.getFullYear(),a.getMonth(),a.getDate()),{bizStart:bs,bizEnd:be}=DB.settings;
+ while(d<b&&g++<900){if(isWork(d)){let s=Math.max(a,at(d,bs)),e=Math.min(b,at(d,be));if(e>s)m+=(e-s)/60000}d.setDate(d.getDate()+1)}return m}
+function addBiz(from,mins){let d=new Date(from),rem=mins,g=0,{bizStart:bs,bizEnd:be}=DB.settings;
+ while(g++<900){if(isWork(d)){let s=at(d,bs),e=at(d,be),cur=Math.max(d,s);if(cur<e){let av=(e-cur)/60000;if(rem<=av)return new Date(cur+rem*60000);rem-=av}}d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)}return d}
+function activeBiz(t,end){let m=biz(t.created,end);(t.pauses||[]).forEach(p=>{let pe=p.to?Math.min(+new Date(p.to),+end):+end;if(pe>+new Date(p.from))m-=biz(p.from,pe)});return Math.max(0,m)}
+function slaInfo(t){let pol=DB.settings.sla[t.priority]||DB.settings.sla.Medium,now=Date.now(),paused=t.status==="Pending",done=t.resolvedAt||t.closedAt;
+ const mk=(el,target,fin)=>{let pct=el/target*100;let st=fin?(pct>100?"breached":"met"):pct>=100?"breached":paused?"paused":pct>=DB.settings.warnPct?"warn":"ok";return{el,target,pct,st,left:target-el}};
+ return{resp:mk(activeBiz(t,t.firstResponseAt?+new Date(t.firstResponseAt):now),pol.resp,!!t.firstResponseAt),res:mk(activeBiz(t,done?+new Date(done):now),pol.res,!!done),paused}}
+function slaState(t){let s=slaInfo(t);if(!isOpen(t))return s.res.st==="breached"?"breached":"met";if(s.resp.st==="breached"||s.res.st==="breached")return"breached";if(s.paused)return"paused";if(s.resp.st==="warn"||s.res.st==="warn")return"warn";return"ok"}
+function slaBadge(t){let st=slaState(t),s=slaInfo(t);let txt={met:"SLA met",breached:isOpen(t)?"Breached":"SLA missed",paused:"Paused",warn:"Due "+fmtMin(Math.min(s.res.left,s.resp.st==="warn"?s.resp.left:1e9)),ok:fmtMin(s.res.left)+" left"}[st];return `<span class="pill sla-${st}">${txt}</span>`}
+function dueDate(t){let s=slaInfo(t);return s.res.left>0&&isOpen(t)&&!s.paused?addBiz(new Date(),s.res.left):null}
+
+/* ============ WORKFLOW ============ */
+function setStatus(t,ns,by,extra){let os=t.status;if(os===ns)return;let now=iso();
+ if(os==="Pending"){let p=(t.pauses||[]).find(p=>!p.to);if(p)p.to=now}
+ if(ns==="Pending"){t.pauses=t.pauses||[];t.pauses.push({from:now,to:null})}
+ if(ns==="In Progress"&&!t.firstResponseAt&&by&&isStaff(U(by)))t.firstResponseAt=now;
+ if(ns==="Resolved"){t.resolvedAt=now;t.closedAt=null;if(!t.firstResponseAt)t.firstResponseAt=now;if(extra&&extra.resolution)t.resolution=extra.resolution}
+ if(ns==="Closed"){t.closedAt=now;if(!t.resolvedAt){t.resolvedAt=now;if(!t.firstResponseAt)t.firstResponseAt=now}}
+ if(["Resolved","Closed"].includes(os)&&!["Resolved","Closed"].includes(ns)){t.resolvedAt=null;t.closedAt=null;t.reopened=(t.reopened||0)+1}
+ t.status=ns;t.updated=now;hist(t,by,`Status: ${os} → ${ns}`)}
+
+function setField(id,f,v){let t=T(id);if(!t||!canWork())return;let old=t[f];if((old||"")===(v||""))return;
+ if(f==="status"){ticketView(id);if(v==="Resolved")return resolveModal(id);setStatus(t,v,DB.meId)}
+ else if(f==="assignee"){t.assignee=v||null;if(v&&U(v).group)t.group=U(v).group;hist(t,DB.meId,`Assignee: ${uname(old)} → ${uname(v)}`)}
+ else{t[f]=v;hist(t,DB.meId,`${f}: ${old||"-"} → ${v||"-"}`);
+  if(f==="impact"||f==="urgency"){let np=calcPriority(t.impact,t.urgency);if(np!==t.priority){hist(t,DB.meId,`priority (auto): ${t.priority} → ${np}`);t.priority=np}}}
+ t.updated=iso();audit(`Updated ${f}`,id);save();ticketView(id);renderHeader()}
+
+function resolveModal(id,after){openModal("Resolve "+id,`<form id="rf"><div class="field"><label>Resolution / Root cause *</label><textarea name="r" required></textarea></div><div class="actions"><button type="button" class="secondary" onclick="closeModal()">Cancel</button><button class="success">Mark Resolved</button></div></form>`);
+ $("rf").onsubmit=e=>{e.preventDefault();let t=T(id);setStatus(t,"Resolved",DB.meId,{resolution:new FormData(e.target).get("r")});audit("Resolved",id);save();closeModal();toast("Ticket resolved");after?after():ticketView(id);renderHeader()}}
+
+function addComment(id){let t=T(id),txt=$("cm").value.trim();if(!txt)return;let internal=$("cint")?.checked||false;
+ t.comments.push({id:"c"+Date.now().toString(36),by:DB.meId,text:txt,internal,at:iso()});
+ if(isStaff()&&!internal&&!t.firstResponseAt){t.firstResponseAt=iso();hist(t,DB.meId,"First response sent")}
+ if(!isStaff()&&t.status==="Pending"){setStatus(t,"In Progress",DB.meId);hist(t,DB.meId,"Requester replied")}
+ t.updated=iso();audit(internal?"Internal note":"Comment",id);save();ticketView(id,"comments");renderHeader()}
+
+function logTime(id){let m=Number($("lt").value);if(!m||m<=0)return;let t=T(id);t.timeSpent=(t.timeSpent||0)+m;hist(t,DB.meId,`Logged ${m} min`);save();ticketView(id)}
+function toggleWatch(id){let t=T(id);t.watchers=t.watchers||[];let i=t.watchers.indexOf(DB.meId);i<0?t.watchers.push(DB.meId):t.watchers.splice(i,1);save();ticketView(id)}
+function addLink(id){let v=$("lk").value.trim().toUpperCase();let o=T(v);if(!o||v===id)return toast("Ticket not found");let t=T(id);t.links=t.links||[];if(!t.links.includes(v)){t.links.push(v);o.links=o.links||[];if(!o.links.includes(id))o.links.push(id);hist(t,DB.meId,"Linked "+v);save()}ticketView(id,"links")}
+function approve(id,ok){let t=T(id);t.approval={status:ok?"Approved":"Rejected",by:DB.meId,at:iso()};hist(t,DB.meId,"Change "+t.approval.status);audit("Change "+t.approval.status,id);save();toast("Change "+t.approval.status);route(true)}
+function rate(id,n){let t=T(id);t.csat={rating:n,comment:($("csc")?.value)||"",at:iso()};hist(t,DB.meId,"CSAT rated "+n+"/5");save();ticketView(id)}
+function empClose(id){setStatus(T(id),"Closed",DB.meId);save();ticketView(id)}
+function reopen(id){let t=T(id);setStatus(t,isStaff()?"In Progress":"Open",DB.meId);audit("Reopened",id);save();ticketView(id);renderHeader()}
+function deleteTicket(id){if(!confirm("Delete "+id+"?"))return;(T(id)?.files||[]).forEach(f=>fileDel(f.id));DB.tickets=DB.tickets.filter(t=>t.id!==id);audit("Deleted ticket",id);save();toast("Deleted");location.hash="#/tickets"}
+function cloneTicket(id){let o=T(id);createTicket({summary:o.summary,description:o.description,type:o.type,category:o.category,impact:o.impact,urgency:o.urgency})}
+
+/* ============ ATTACHMENTS (IndexedDB) ============ */
+const MAX_FILE=5*1024*1024,MAX_FILES=10;
+const OKTYPE=/^(image\/|application\/pdf|text\/plain|text\/csv|application\/zip|application\/msword|application\/vnd\.)/;
+const OKEXT=/\.(pdf|docx?|xlsx?|pptx?|txt|csv|zip|log|png|jpe?g|gif|webp|bmp)$/i;
+const fsize=n=>n<1024?n+" B":n<1048576?(n/1024).toFixed(0)+" KB":(n/1048576).toFixed(1)+" MB";
+let pending=[];
+
+function idb(){return new Promise((res,rej)=>{if(idb.p)return res(idb.p);let r=indexedDB.open("itsm_files",1);r.onupgradeneeded=()=>r.result.createObjectStore("f");r.onsuccess=()=>res(idb.p=r.result);r.onerror=()=>rej(r.error)})}
+async function filePut(id,blob){let db=await idb();return new Promise((res,rej)=>{let tx=db.transaction("f","readwrite");tx.objectStore("f").put(blob,id);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}
+async function fileGet(id){let db=await idb();return new Promise((res,rej)=>{let q=db.transaction("f").objectStore("f").get(id);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+async function fileDel(id){let db=await idb();return new Promise(res=>{let tx=db.transaction("f","readwrite");tx.objectStore("f").delete(id);tx.oncomplete=res;tx.onerror=res})}
+const newFid=()=>"f"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+function shrink(file){return new Promise(res=>{
+ if(!file.type.startsWith("image/")||file.type==="image/gif")return res(file);
+ let img=new Image(),u=URL.createObjectURL(file);
+ img.onload=()=>{let s=Math.min(1,1600/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+  c.toBlob(b=>{URL.revokeObjectURL(u);res(b&&b.size<file.size?new File([b],file.name.replace(/\.\w+$/,"")+".jpg",{type:"image/jpeg"}):file)},"image/jpeg",.82)};
+ img.onerror=()=>{URL.revokeObjectURL(u);res(file)};img.src=u})}
+
+async function pickFiles(files,tid){
+ for(const f of [...files]){
+  if(/svg/i.test(f.type)||/\.svg$/i.test(f.name)||(!OKTYPE.test(f.type)&&!OKEXT.test(f.name))){toast("File type not allowed: "+f.name);continue}
+  let b=await shrink(f);
+  if(b.size>MAX_FILE){toast(f.name+" is larger than 5 MB");continue}
+  if(tid){
+   let t=T(tid);if(!t)return;t.files=t.files||[];
+   if(t.files.length>=MAX_FILES){toast("Max "+MAX_FILES+" files per ticket");break}
+   let id=newFid();await filePut(id,b);
+   t.files.push({id,name:f.name,type:b.type||f.type||"application/octet-stream",size:b.size,by:DB.meId,at:iso()});
+   hist(t,DB.meId,"Attached "+f.name);t.updated=iso();audit("Attached file",tid);
+  }else{
+   if(pending.length>=MAX_FILES){toast("Max "+MAX_FILES+" files");break}
+   pending.push({name:f.name,blob:b});
+  }}
+ if(tid){save();ticketView(tid,"files")}else renderPending()}
+
+function renderPending(){let el=$("pf");if(!el)return;
+ el.innerHTML=pending.map((p,i)=>`<span class="tag">📎 ${safe(p.name)} (${fsize(p.blob.size)}) <a style="cursor:pointer" onclick="pending.splice(${i},1);renderPending()">✕</a></span>`).join("")}
+async function commitPending(){let out=[];
+ for(const p of pending){let id=newFid();await filePut(id,p.blob);out.push({id,name:p.name,type:p.blob.type||"application/octet-stream",size:p.blob.size,by:DB.meId,at:iso()})}
+ pending=[];return out}
+
+function findFile(id){for(const t of DB.tickets){let f=(t.files||[]).find(x=>x.id===id);if(f)return f}}
+async function loadThumbs(){for(const im of document.querySelectorAll("img[data-fid]")){let b=await fileGet(im.dataset.fid);if(b)im.src=URL.createObjectURL(b)}}
+async function openFile(id){let m=findFile(id);if(!m)return;let b=await fileGet(id);if(!b)return toast("File data not found in this browser");let u=URL.createObjectURL(b);
+ if(m.type.startsWith("image/"))openModal(m.name,`<img src="${u}" style="max-width:100%;border-radius:6px"><div class="actions"><button class="secondary" onclick="downloadFile('${id}')">⬇ Download</button></div>`,true);
+ else if(m.type==="application/pdf")openModal(m.name,`<iframe src="${u}" style="width:100%;height:70vh;border:0"></iframe>`,true);
+ else downloadFile(id)}
+async function downloadFile(id){let m=findFile(id),b=await fileGet(id);if(!m||!b)return toast("File not found");
+ let a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=m.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+async function removeFile(tid,id){let t=T(tid),f=(t.files||[]).find(x=>x.id===id);if(!f||!(canWork()||f.by===DB.meId))return;
+ if(!confirm("Delete "+f.name+"?"))return;
+ t.files=t.files.filter(x=>x.id!==id);await fileDel(id);hist(t,DB.meId,"Removed "+f.name);audit("Removed file",tid);save();ticketView(tid,"files")}
+
+function filesTab(t){let m=me(),fl=t.files||[];setTimeout(loadThumbs,0);
+ return `<div class="drop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="event.preventDefault();this.classList.remove('over');pickFiles(event.dataTransfer.files,'${safe(t.id)}')">ลากไฟล์มาวาง, กด Ctrl+V เพื่อวางภาพหน้าจอ หรือ <label class="id">เลือกไฟล์<input type="file" multiple hidden accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.log" onchange="pickFiles(this.files,'${safe(t.id)}');this.value=''"></label><div class="muted">ไม่เกิน 5 MB ต่อไฟล์ · สูงสุด ${MAX_FILES} ไฟล์</div></div>
+ <div class="files">${fl.map(f=>`<div class="fcard">${f.type.startsWith("image/")?`<img class="fthumb" data-fid="${f.id}" alt="${safe(f.name)}" onclick="openFile('${f.id}')">`:`<div class="fico" onclick="openFile('${f.id}')">${safe((f.name.split(".").pop()||"FILE").slice(0,4).toUpperCase())}</div>`}<div class="fname">${safe(f.name)}</div><div class="muted">${fsize(f.size)} · ${safe(uname(f.by))} · ${ago(f.at)}</div><div style="margin-top:6px"><button class="secondary sm" onclick="downloadFile('${f.id}')">⬇</button> ${(canWork()||f.by===m.id)?`<button class="danger sm" onclick="removeFile('${safe(t.id)}','${f.id}')">✕</button>`:""}</div></div>`).join("")||'<div class="empty">No attachments</div>'}</div>`}
+
+/* ============ NAV / ROUTER ============ */
+const NAV=[
+["WORKSPACE"],["dashboard","▦ Dashboard",["Admin","Agent","Manager"]],["portal","⌂ My Portal",["Employee"]],["mywork","▤ My Work",["Admin","Agent"]],["board","▥ Kanban Board",["Admin","Agent","Manager"]],
+["SERVICE DESK"],["tickets","▣ All Tickets",["Admin","Agent","Manager"]],["tickets","▣ My Requests",["Employee"]],["tickets?type=Incident","◉ Incidents",["Admin","Agent","Manager"]],["tickets?type=Service Request","▤ Service Requests",["Admin","Agent","Manager"]],["tickets?type=Problem","◈ Problems",["Admin","Agent","Manager"]],["tickets?type=Change","⇄ Changes",["Admin","Agent","Manager"]],["approvals","✔ Approvals",["Admin","Manager"]],
+["IT MANAGEMENT"],["assets","▧ Assets",["Admin","Agent","Manager"]],["teams","♙ Teams & Workload",["Admin","Agent","Manager"]],["sla","◷ SLA Monitor",["Admin","Agent","Manager"]],["knowledge","▤ Knowledge Base",["Admin","Agent","Manager","Employee"]],
+["ANALYTICS"],["reports","▥ Reports",["Admin","Agent","Manager"]],
+["ADMINISTRATION"],["users","♙ Users",["Admin"]],["settings","⚙ Settings",["Admin"]],["audit","◷ Audit Log",["Admin"]]];
+const PAGE_ROLES={dashboard:["Admin","Agent","Manager"],portal:["Employee"],mywork:["Admin","Agent"],board:["Admin","Agent","Manager"],tickets:ROLES,ticket:ROLES,approvals:["Admin","Manager"],assets:["Admin","Agent","Manager"],teams:["Admin","Agent","Manager"],sla:["Admin","Agent","Manager"],knowledge:ROLES,reports:["Admin","Agent","Manager"],users:["Admin"],settings:["Admin"],audit:["Admin"]};
+const defaultPage=()=>me().role==="Employee"?"portal":"dashboard";
+function renderNav(){let cur=location.hash.replace(/^#\//,"")||defaultPage(),r=me().role,h="",skip=false;
+ try{cur=decodeURIComponent(cur)}catch(e){}
+ NAV.forEach((n,i)=>{if(n.length===1){let has=false;for(let j=i+1;j<NAV.length&&NAV[j].length>1;j++)if(NAV[j][2].includes(r))has=true;skip=!has;if(has)h+=`<div class="navtitle">${n[0]}</div>`;return}
+  if(skip||!n[2].includes(r))return;
+  h+=`<a class="nav ${cur===n[0]?"active":""}" href="#/${n[0]}">${n[1]}</a>`});$("nav").innerHTML=h}
+function renderHeader(){$("meSel").innerHTML=DB.users.filter(u=>u.active).map(u=>`<option value="${u.id}" ${u.id===DB.meId?"selected":""}>${safe(u.name)} (${u.role})</option>`).join("");
+ let al=alerts();let b=$("nbadge");b.textContent=al.length;b.style.display=al.length?"block":"none";
+ $("notif").innerHTML=al.length?al.map(a=>`<div onclick="location.hash='#/${a[1]}';toggleNotif()">${a[0]}</div>`).join(""):'<div style="cursor:default">No notifications 🎉</div>'}
+function toggleNotif(){let n=$("notif");n.style.display=n.style.display==="block"?"none":"block"}
+function toggleTheme(){document.body.classList.toggle("dark");localStorage.setItem(LSTHEME,document.body.classList.contains("dark")?"dark":"light")}
+function switchUser(id){DB.meId=id;localStorage.setItem(LSME,id);audit("Switched user (demo)");save();renderHeader();location.hash="#/"+defaultPage();route()}
+function alerts(){let m=me(),out=[];
+ if(isStaff(m)){DB.tickets.filter(t=>isOpen(t)&&(canWork(m)?t.assignee===m.id:true)).forEach(t=>{let s=slaState(t);if(s==="breached")out.push([`🔴 SLA breached: <b>${safe(t.id)}</b> ${safe(t.summary)}`,"ticket/"+t.id]);else if(s==="warn")out.push([`🟠 SLA at risk: <b>${safe(t.id)}</b> ${safe(t.summary)}`,"ticket/"+t.id])});
+  if(canWork(m))DB.tickets.filter(t=>isOpen(t)&&!t.assignee&&["Critical","High"].includes(t.priority)).forEach(t=>out.push([`⚠ Unassigned ${t.priority}: <b>${safe(t.id)}</b>`,"ticket/"+t.id]));
+  if(["Admin","Manager"].includes(m.role)){let n=DB.tickets.filter(t=>t.approval&&t.approval.status==="Pending").length;if(n)out.push([`✔ ${n} change(s) waiting for approval`,"approvals"])}}
+ else{DB.tickets.filter(t=>t.reporter===m.id).forEach(t=>{if(t.status==="Resolved")out.push([`✅ <b>${safe(t.id)}</b> resolved - please confirm`,"ticket/"+t.id]);else if(t.comments.some(c=>!c.internal&&c.by!==m.id&&Date.now()-new Date(c.at)<172800000)&&isOpen(t))out.push([`💬 New reply on <b>${safe(t.id)}</b>`,"ticket/"+t.id])})}
+ return out.slice(0,25)}
+function route(keep){let h=location.hash.replace(/^#\/?/,"")||defaultPage();let [p,qs]=h.split("?");let [name,arg]=p.split("/");let q=Object.fromEntries(new URLSearchParams(qs||""));
+ if(!PAGE_ROLES[name]||!PAGE_ROLES[name].includes(me().role)){name=defaultPage();arg=null;q={}}
+ if(!keep)closeModal();renderNav();
+ let V={dashboard,portal,mywork,board,tickets:ticketsPage,ticket:ticketView,approvals:approvalsPage,assets:assetsPage,teams:teamsPage,sla:slaPage,knowledge:kbPage,reports:reportsPage,users:usersPage,settings:settingsPage,audit:auditPage};
+ let y=window.scrollY;V[name](arg,q,keep);if(keep)window.scrollTo(0,y);else window.scrollTo(0,0)}
+window.addEventListener("hashchange",()=>route());
+
+/* ============ DASHBOARD ============ */
+function dashboard(){let tk=DB.tickets,open=tk.filter(isOpen);
+ let breached=open.filter(t=>slaState(t)==="breached").length,warn=open.filter(t=>slaState(t)==="warn").length,unas=open.filter(t=>!t.assignee).length;
+ let today=new Date().toDateString(),resT=tk.filter(t=>t.resolvedAt&&new Date(t.resolvedAt).toDateString()===today).length;
+ let rated=tk.filter(t=>t.csat),cs=rated.length?(rated.reduce((a,t)=>a+t.csat.rating,0)/rated.length).toFixed(1):"-";
+ let days=[],cr=[],rs=[];for(let i=13;i>=0;i--){let d=new Date();d.setDate(d.getDate()-i);let k=d.toDateString();days.push(d.getDate()+"/"+(d.getMonth()+1));cr.push(tk.filter(t=>new Date(t.created).toDateString()===k).length);rs.push(tk.filter(t=>t.resolvedAt&&new Date(t.resolvedAt).toDateString()===k).length)}
+ let att=open.filter(t=>slaState(t)==="breached"||(!t.assignee&&["Critical","High"].includes(t.priority))).slice(0,6);
+ let agents=DB.users.filter(u=>u.role==="Agent"||u.role==="Admin"&&open.some(t=>t.assignee===u.id));
+ $("content").innerHTML=heading("Dashboard","IT Service Desk overview · business hours "+String(DB.settings.bizStart).padStart(2,"0")+":00–"+String(DB.settings.bizEnd).padStart(2,"0")+":00")+
+ `<div class="cards">${card("OPEN TICKETS",open.length,"","tickets?f=open")}${card("UNASSIGNED",unas,unas?"amber":"","tickets?f=unassigned")}${card("SLA BREACHED",breached,breached?"red":"green","tickets?f=breached")}${card("SLA AT RISK",warn,warn?"amber":"","tickets?f=warn")}${card("RESOLVED TODAY",resT,"green")}${card("CSAT (avg/5)",cs,"")}</div>
+ <div class="grid2"><div class="panel"><h3>Tickets by Status</h3>${donut(STATUSES.map((s,i)=>[s,tk.filter(t=>t.status===s).length,["#2684ff","#6554c0","#f59e0b","#22a06b","#97a0af"][i]]))}</div>
+ <div class="panel"><h3>Open by Priority</h3>${hbars(PRIOS.map(p=>[p,open.filter(t=>t.priority===p).length]))}</div></div>
+ <div class="panel"><h3>14-day Trend</h3>${trend(days,cr,rs)}</div>
+ <div class="grid2"><div class="panel"><h3>⚠ Needs Attention</h3>${att.map(t=>`<div class="item row"><span><span class="id" onclick="location.hash='#/ticket/${safe(t.id)}'">${safe(t.id)}</span> ${safe(t.summary)}</span>${slaBadge(t)}</div>`).join("")||'<div class="empty">All good 🎉</div>'}</div>
+ <div class="panel"><h3>Agent Workload (open)</h3>${hbars(agents.map(u=>[u.name,open.filter(t=>t.assignee===u.id).length]))}</div></div>
+ <div class="panel"><h3>Recent Activity</h3>${DB.logs.slice(0,6).map(l=>`<div class="item row"><span>${safe(uname(l.by))}: ${safe(l.action)} ${safe(l.ref)}</span><span class="muted">${ago(l.at)}</span></div>`).join("")||'<div class="empty">No activity</div>'}</div>`}
+
+/* ============ PORTAL (Employee) ============ */
+function portal(){let m=me(),mine=DB.tickets.filter(t=>t.reporter===m.id),pub=DB.articles.filter(a=>a.status==="Published").sort((a,b)=>b.views-a.views).slice(0,4),wait=mine.filter(t=>t.status==="Resolved");
+ $("content").innerHTML=`<div class="hero"><h2>สวัสดี ${safe(m.name)} 👋 มีอะไรให้ IT ช่วย?</h2><div>ค้นหาวิธีแก้ปัญหาก่อน หรือแจ้งปัญหา/ขอบริการได้ทันที</div><input placeholder="ค้นหาบทความ เช่น internet, printer, password" onkeydown="if(event.key==='Enter')location.hash='#/knowledge?q='+encodeURIComponent(this.value)"><div style="margin-top:12px"><button class="secondary" onclick="createTicket({type:'Incident'})">🛠 แจ้งปัญหา (Incident)</button> <button class="secondary" onclick="createTicket({type:'Service Request'})">📦 ขอบริการ (Request)</button></div></div>
+ ${wait.length?`<div class="panel" style="border-color:#22a06b"><h3>✅ รอการยืนยันปิดงาน</h3>${wait.map(t=>`<div class="item row"><span>${safe(t.id)} ${safe(t.summary)}</span><button class="success sm" onclick="location.hash='#/ticket/${safe(t.id)}'">ตรวจสอบ</button></div>`).join("")}</div>`:""}
+ <div class="cards">${card("MY OPEN",mine.filter(isOpen).length)}${card("RESOLVED",mine.filter(t=>!isOpen(t)).length,"green")}</div>
+ <div class="grid2"><div class="panel"><h3>My Recent Requests</h3>${mine.slice(0,6).map(t=>`<div class="item row"><span><span class="id" onclick="location.hash='#/ticket/${safe(t.id)}'">${safe(t.id)}</span> ${safe(t.summary)}</span>${pill(t.status)}</div>`).join("")||'<div class="empty">ยังไม่มีรายการ</div>'}</div>
+ <div class="panel"><h3>Popular Articles</h3>${pub.map(a=>`<div class="item"><a class="id" onclick="viewArticle('${a.id}')">${safe(a.title)}</a> <span class="tag">${safe(a.category)}</span></div>`).join("")}</div></div>`}
+
+/* ============ TICKET LIST ============ */
+const FILTERS={open:"Open (active)",mine:"Assigned to me",unassigned:"Unassigned",breached:"SLA breached",warn:"SLA at risk",watching:"Watching",resolved:"Resolved/Closed",all:"All"};
+function visible(){return me().role==="Employee"?DB.tickets.filter(t=>t.reporter===DB.meId):DB.tickets}
+function matchF(t,f){let o=isOpen(t);switch(f){case"open":return o;case"mine":return o&&t.assignee===DB.meId;case"unassigned":return o&&!t.assignee;case"breached":return o&&slaState(t)==="breached";case"warn":return o&&slaState(t)==="warn";case"watching":return(t.watchers||[]).includes(DB.meId);case"resolved":return!o;default:return true}}
+function ticketsPage(_,q,keep){if(!keep)S.list={f:q.f||"all",type:q.type||"",status:"",prio:"",assignee:"",q:q.q||"",sort:"new",page:1,sel:[]};let L=S.list,emp=me().role==="Employee";
+ $("content").innerHTML=heading(emp?"My Requests":(L.type?L.type+"s":"All Tickets"),emp?"Your submitted tickets":"Manage all IT support tickets",'<button class="primary" onclick="createTicket()">＋ Create Ticket</button>')+
+ `<div class="chips" id="chips"></div><div class="toolbar"><input type="search" class="grow" id="lq" placeholder="Search key, summary, tags, people…" value="${safe(L.q)}" oninput="S.list.q=this.value;S.list.page=1;renderList()">
+ <select onchange="S.list.type=this.value;S.list.page=1;renderList()"><option value="">All Types</option>${TYPES.map(x=>`<option ${x===L.type?"selected":""}>${x}</option>`).join("")}</select>
+ <select onchange="S.list.status=this.value;S.list.page=1;renderList()"><option value="">All Status</option>${opts(STATUSES,L.status)}</select>
+ <select onchange="S.list.prio=this.value;S.list.page=1;renderList()"><option value="">All Priority</option>${opts(PRIOS,L.prio)}</select>
+ ${emp?"":`<select onchange="S.list.assignee=this.value;S.list.page=1;renderList()"><option value="">Any assignee</option><option value="none">Unassigned</option>${DB.users.filter(u=>u.role!=="Employee").map(u=>`<option value="${u.id}" ${u.id===L.assignee?"selected":""}>${safe(u.name)}</option>`).join("")}</select>`}
+ <select onchange="S.list.sort=this.value;renderList()"><option value="new">Newest</option><option value="old" ${L.sort==="old"?"selected":""}>Oldest</option><option value="prio" ${L.sort==="prio"?"selected":""}>Priority</option><option value="sla" ${L.sort==="sla"?"selected":""}>SLA (most urgent)</option><option value="upd" ${L.sort==="upd"?"selected":""}>Recently updated</option></select>
+ <button class="secondary" onclick="exportTickets()">⬇ CSV</button></div><div id="bulk"></div><div id="tlist"></div>`;renderList()}
+function filtered(){let L=S.list,q=(L.q||"").toLowerCase();let r=visible().filter(t=>matchF(t,L.f)&&(!L.type||t.type===L.type)&&(!L.status||t.status===L.status)&&(!L.prio||t.priority===L.prio)&&(!L.assignee||(L.assignee==="none"?!t.assignee:t.assignee===L.assignee))&&(!q||[t.id,t.summary,t.description,(t.tags||[]).join(" "),uname(t.reporter),uname(t.assignee),t.category].join(" ").toLowerCase().includes(q)));
+ let po=t=>PRIOS.indexOf(t.priority);let rem=t=>isOpen(t)?slaInfo(t).res.left:1e12;
+ r.sort({new:(a,b)=>b.created.localeCompare(a.created),old:(a,b)=>a.created.localeCompare(b.created),prio:(a,b)=>po(a)-po(b)||b.created.localeCompare(a.created),sla:(a,b)=>rem(a)-rem(b),upd:(a,b)=>b.updated.localeCompare(a.updated)}[L.sort]);return r}
+function renderList(){let L=S.list,base=visible();
+ $("chips").innerHTML=Object.entries(FILTERS).filter(([k])=>me().role!=="Employee"||["open","resolved","all"].includes(k)).map(([k,v])=>`<span class="chip ${L.f===k?"on":""}" onclick="S.list.f='${k}';S.list.page=1;renderList()">${v} (${base.filter(t=>matchF(t,k)&&(!L.type||t.type===L.type)).length})</span>`).join("");
+ let r=filtered(),per=15,pages=Math.max(1,Math.ceil(r.length/per));if(L.page>pages)L.page=pages;let pg=r.slice((L.page-1)*per,L.page*per),staff=canWork();
+ $("bulk").innerHTML=staff&&L.sel.length?`<div class="panel row" style="padding:10px"><b>${L.sel.length} selected</b><span class="toolbar" style="margin:0"><select id="bAs"><option value="">Assign to…</option>${uopts(DB.users.filter(u=>u.role!=="Employee"&&u.role!=="Manager"),"")}</select><select id="bSt"><option value="">Set status…</option>${opts(STATUSES,"")}</select><button class="primary sm" onclick="bulkApply()">Apply</button>${me().role==="Admin"?'<button class="danger sm" onclick="bulkDel()">Delete</button>':""}<button class="secondary sm" onclick="S.list.sel=[];renderList()">Clear</button></span></div>`:"";
+ let h=["","KEY","SUMMARY","TYPE","PRIORITY","STATUS","ASSIGNEE","SLA","CREATED"];
+ $("tlist").innerHTML=tbl(h.map((x,i)=>i===0&&staff?`<input type="checkbox" onchange="selAll(this.checked)">`:x),pg.map(t=>`<tr><td>${staff?`<input type="checkbox" ${L.sel.includes(t.id)?"checked":""} onchange="selOne('${safe(t.id)}',this.checked)">`:""}</td><td><span class="id" onclick="location.hash='#/ticket/${safe(t.id)}'">${safe(t.id)}</span></td><td>${safe(t.summary)}${(t.files||[]).length?" 📎"+t.files.length:""}${(t.tags||[]).map(x=>`<span class="tag">${safe(x)}</span>`).join("")}</td><td>${pill(t.type)}</td><td>${pill(t.priority)}</td><td>${pill(t.status)}</td><td>${av(t.assignee)}${t.assignee?safe(uname(t.assignee)):'<span class="muted">Unassigned</span>'}</td><td>${slaBadge(t)}</td><td>${fmtD(t.created)}</td></tr>`).join(""),"No tickets found")+
+ `<div class="row" style="margin-top:10px"><span class="muted">${r.length} ticket(s)</span><span><button class="secondary sm" ${L.page<=1?"disabled":""} onclick="S.list.page--;renderList()">‹ Prev</button> <span class="muted">Page ${L.page}/${pages}</span> <button class="secondary sm" ${L.page>=pages?"disabled":""} onclick="S.list.page++;renderList()">Next ›</button></span></div>`}
+function av(id){let u=U(id);if(!u)return'<span class="av un">?</span>';let ini=u.name.split(/\s+/).map(x=>x[0]).join("").slice(0,2).toUpperCase(),h=[...u.name].reduce((a,c)=>a+c.charCodeAt(0),0)%360;return `<span class="av" style="background:hsl(${h} 55% 42%)" title="${safe(u.name)}">${safe(ini)}</span>`}
+function selOne(id,on){let s=S.list.sel;on?s.includes(id)||s.push(id):s.splice(s.indexOf(id),1);renderList()}
+function selAll(on){S.list.sel=on?filtered().map(t=>t.id):[];renderList()}
+function bulkApply(){let as=$("bAs").value,st=$("bSt").value,res="";if(!as&&!st)return;if(st==="Resolved"){res=prompt("Resolution note for all selected tickets:");if(!res)return}
+ S.list.sel.forEach(id=>{let t=T(id);if(!t)return;if(as){t.assignee=as;t.group=U(as).group||t.group;hist(t,DB.meId,"Assignee → "+uname(as))}if(st)setStatus(t,st,DB.meId,{resolution:res});t.updated=iso()});audit("Bulk update "+S.list.sel.length+" tickets");S.list.sel=[];save();renderList();renderHeader();toast("Updated")}
+function bulkDel(){if(!confirm("Delete "+S.list.sel.length+" tickets?"))return;S.list.sel.forEach(id=>(T(id)?.files||[]).forEach(f=>fileDel(f.id)));DB.tickets=DB.tickets.filter(t=>!S.list.sel.includes(t.id));audit("Bulk delete "+S.list.sel.length);S.list.sel=[];save();renderList()}
+function exportTickets(){csv("tickets-"+new Date().toISOString().slice(0,10)+".csv",[["Key","Summary","Type","Category","Priority","Status","Reporter","Assignee","Group","Created","First Response","Resolved","Resp SLA","Res SLA","Time (min)","Files","CSAT"],...filtered().map(t=>{let s=slaInfo(t);return[t.id,t.summary,t.type,t.category,t.priority,t.status,uname(t.reporter),uname(t.assignee),t.group,t.created,t.firstResponseAt||"",t.resolvedAt||"",s.resp.st,s.res.st,t.timeSpent||0,(t.files||[]).length,t.csat?t.csat.rating:""]})])}
+
+/* ============ CREATE TICKET ============ */
+function createTicket(pre){pre=pre||{};pending=[];let m=me(),staff=canWork(),emp=m.role==="Employee";
+ openModal("Create Ticket",`<form id="tf"><div class="field"><label>Summary *</label><input name="summary" id="tsum" required value="${safe(pre.summary||"")}" oninput="suggest(this.value)" autocomplete="off"></div><div id="sug"></div>
+ <div class="field"><label>Description</label><textarea name="description">${safe(pre.description||"")}</textarea></div>
+ <div class="grid2"><div class="field"><label>Type</label><select name="type">${opts(emp?["Incident","Service Request"]:TYPES,pre.type||"Incident")}</select></div>
+ <div class="field"><label>Category</label><select name="category">${opts(DB.settings.categories,pre.category||"Other")}</select></div>
+ <div class="field"><label>Impact</label><select name="impact" onchange="prevPrio()">${opts(LEVELS,pre.impact||"Medium")}</select></div>
+ <div class="field"><label>Urgency</label><select name="urgency" onchange="prevPrio()">${opts(LEVELS,pre.urgency||"Medium")}</select></div>
+ <div class="field"><label>Reporter</label>${emp?`<input value="${safe(m.name)}" disabled>`:`<select name="reporter">${uopts(DB.users.filter(u=>u.active),m.id)}</select>`}</div>
+ ${staff?`<div class="field"><label>Assignee</label><select name="assignee">${uopts(DB.users.filter(u=>["Admin","Agent"].includes(u.role)&&u.active),"","Unassigned")}</select></div>`:`<div class="field"><label>Priority (auto)</label><div id="pp" style="padding:9px"></div></div>`}
+ <div class="field"><label>Related asset</label><select name="assetId"><option value="">— none —</option>${DB.assets.filter(a=>!emp||a.owner===m.id||!a.owner).map(a=>`<option value="${a.id}">${safe(a.id)} · ${safe(a.name)}</option>`).join("")}</select></div>
+ <div class="field"><label>Tags (comma separated)</label><input name="tags"></div></div>
+ <div class="field"><label>Attachments (รูป / เอกสาร ไม่เกิน 5 MB ต่อไฟล์)</label>
+  <div class="drop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="event.preventDefault();this.classList.remove('over');pickFiles(event.dataTransfer.files)">ลากไฟล์มาวาง, กด Ctrl+V วางภาพหน้าจอ หรือ <label class="id">เลือกไฟล์<input type="file" multiple hidden accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.log" onchange="pickFiles(this.files);this.value=''"></label></div>
+  <div id="pf"></div></div>
+ ${staff?'<div class="muted" id="pp"></div>':""}
+ <div class="actions"><button type="button" class="secondary" onclick="closeModal()">Cancel</button><button class="primary">Create Ticket</button></div></form>`);
+ prevPrio();if(pre.summary)suggest(pre.summary);
+ $("tf").onsubmit=async e=>{e.preventDefault();let f=new FormData(e.target),now=iso(),rep=emp?m.id:f.get("reporter"),asg=staff?f.get("assignee")||null:null;
+  let t={id:nextId(now),summary:f.get("summary").trim(),description:f.get("description"),type:f.get("type"),category:f.get("category"),impact:f.get("impact"),urgency:f.get("urgency"),priority:calcPriority(f.get("impact"),f.get("urgency")),status:"Open",reporter:rep,assignee:asg,group:asg?U(asg).group:"",assetId:f.get("assetId"),tags:f.get("tags").split(",").map(x=>x.trim()).filter(Boolean),created:now,updated:now,firstResponseAt:null,resolvedAt:null,closedAt:null,pauses:[],comments:[],history:[],resolution:"",timeSpent:0,watchers:[m.id],links:[],files:[],csat:null};
+  if(t.type==="Change")t.approval={status:"Pending"};
+  hist(t,m.id,"Ticket created");t.files=await commitPending();if(t.files.length)hist(t,m.id,"Attached "+t.files.length+" file(s)");
+  DB.tickets.unshift(t);audit("Created ticket",t.id);save();closeModal();toast("Created "+t.id);renderHeader();location.hash="#/ticket/"+t.id}}
+function prevPrio(){let f=$("tf");if(!f||!$("pp"))return;let p=calcPriority(f.impact.value,f.urgency.value),s=DB.settings.sla[p];$("pp").innerHTML=`Priority: ${pill(p)} · SLA response ${fmtMin(s.resp)} / resolution ${fmtMin(s.res)} (business time)`}
+function suggest(v){let w=v.toLowerCase().split(/\s+/).filter(x=>x.length>2),r=w.length?DB.articles.filter(a=>a.status==="Published"&&w.some(x=>(a.title+" "+a.category).toLowerCase().includes(x))).slice(0,3):[];$("sug").innerHTML=r.length?`<div class="sugg">💡 บทความที่อาจช่วยได้ (กดเพื่ออ่าน):${r.map(a=>`<a onclick="toggleSug(this)">${safe(a.title)}</a><div class="sugbody">${nl(a.body)}</div>`).join("")}</div>`:""}
+function toggleSug(el){let n=el.nextElementSibling;n.style.display=n.style.display==="block"?"none":"block"}
+
+/* ============ TICKET DETAIL ============ */
+function ticketView(id,tab){let t=T(id);if(!t){$("content").innerHTML=heading("Not found","")+'<div class="panel empty">Ticket not found</div>';return}
+ tab=typeof tab==="string"?tab:(S.tab||"comments");S.tab=tab;let m=me(),staff=canWork(),emp=m.role==="Employee";if(emp&&t.reporter!==m.id){location.hash="#/tickets";return}
+ let s=slaInfo(t),due=dueDate(t),a=t.assetId?A(t.assetId):null,watching=(t.watchers||[]).includes(m.id);
+ let comments=t.comments.filter(c=>!c.internal||isStaff());
+ let sel=(f,arr)=>staff?`<select onchange="setField('${safe(id)}','${f}',this.value)">${opts(arr,t[f])}</select>`:safe(t[f]);
+ let slaRow=(n,x)=>`<div style="margin-bottom:10px"><div class="row"><span>${n}</span><span class="pill sla-${x.st}">${x.st==="met"?"Met":x.st==="breached"?"Breached":x.st==="paused"?"Paused":x.st==="warn"?"At risk":"On track"}</span></div><div class="muted">${fmtMin(x.el)} / ${fmtMin(x.target)} business time</div>${bar(x.pct,x.st==="breached"?"red":x.st==="warn"?"amber":x.st==="met"?"green":"")}</div>`;
+ let acts=[];
+ if(staff){if(isOpen(t)&&!t.assignee)acts.push(`<button class="secondary sm" onclick="setField('${safe(id)}','assignee','${m.id}')">Assign to me</button>`);if(isOpen(t))acts.push(`<button class="success sm" onclick="setField('${safe(id)}','status','Resolved')">✔ Resolve</button>`);else acts.push(`<button class="secondary sm" onclick="reopen('${safe(id)}')">↺ Reopen</button>`);acts.push(`<button class="secondary sm" onclick="cloneTicket('${safe(id)}')">⧉ Clone</button>`);if(m.role==="Admin")acts.push(`<button class="danger sm" onclick="deleteTicket('${safe(id)}')">Delete</button>`)}
+ if(emp&&t.status==="Resolved")acts.push(`<button class="success sm" onclick="empClose('${safe(id)}')">✔ Confirm & Close</button><button class="secondary sm" onclick="reopen('${safe(id)}')">↺ Not fixed - Reopen</button>`);
+ if(emp&&t.status==="Closed")acts.push(`<button class="secondary sm" onclick="reopen('${safe(id)}')">↺ Reopen</button>`);
+ let csat=!isOpen(t)&&t.reporter===m.id?(t.csat?`<div class="panel"><h3>Your rating</h3><span class="stars">${[1,2,3,4,5].map(n=>`<button class="${n<=t.csat.rating?"on":""}" disabled>★</button>`).join("")}</span><div class="muted">${safe(t.csat.comment)}</div></div>`:`<div class="panel"><h3>How did we do?</h3><div class="stars" id="stars">${[1,2,3,4,5].map(n=>`<button onclick="rate('${safe(id)}',${n})">★</button>`).join("")}</div><input id="csc" placeholder="Comment (optional)" style="width:100%;margin-top:8px"></div>`):(t.csat&&isStaff()?`<div class="muted" style="margin-top:8px">CSAT: ${"★".repeat(t.csat.rating)}${"☆".repeat(5-t.csat.rating)} ${safe(t.csat.comment)}</div>`:"");
+ let left=`<div class="panel"><div class="row"><div><span class="muted">${safe(t.id)} · ${safe(t.type)} · ${safe(t.category)}</span><h1 style="font-size:21px;margin:4px 0">${safe(t.summary)}</h1></div></div><div style="margin:8px 0">${pill(t.status)} ${pill(t.priority)} ${slaBadge(t)}</div><div class="toolbar">${acts.join("")}<button class="secondary sm" onclick="toggleWatch('${safe(id)}')">${watching?"👁 Unwatch":"👁 Watch"}</button><button class="secondary sm" onclick="window.print()">🖨 Print</button></div>
+ <div class="field"><label>Description</label><div style="white-space:pre-wrap">${nl(t.description)||'<span class="muted">No description</span>'}</div></div>
+ ${t.resolution?`<div class="field"><label>Resolution</label><div style="background:#e3fcef;color:#006644;padding:10px;border-radius:6px">${nl(t.resolution)}</div></div>`:""}${csat}</div>
+ <div class="panel"><div class="tabs">${[["comments","Comments ("+comments.length+")"],["history","History"],["links","Linked ("+(t.links||[]).length+")"],["files","Files ("+(t.files||[]).length+")"]].map(([k,l])=>`<div class="tab ${tab===k?"on":""}" onclick="ticketView('${safe(id)}','${k}')">${l}</div>`).join("")}</div>
+ ${tab==="comments"?`${comments.map(c=>`<div class="comment ${c.internal?"internal":""}">${av(c.by)}<div class="body"><b>${safe(uname(c.by))}</b> <span class="muted">${fmt(c.at)}</span>${c.internal?' <span class="pill Pending">Internal note</span>':""}<div>${nl(c.text)}</div></div></div>`).join("")||'<div class="empty">No comments yet</div>'}
+ <div style="margin-top:12px"><textarea id="cm" style="width:100%" placeholder="${isStaff()?"Reply to requester or add an internal note…":"Add a comment…"}"></textarea><div class="actions" style="justify-content:space-between"><span class="toolbar" style="margin:0">${isStaff()?`<label><input type="checkbox" id="cint"> Internal note</label><select onchange="if(this.value!==''){$('cm').value=DB.settings.canned[this.value].text;this.value=''}"><option value="">Canned response…</option>${DB.settings.canned.map((c,i)=>`<option value="${i}">${safe(c.title)}</option>`).join("")}</select>`:""}</span><button class="primary" onclick="addComment('${safe(id)}')">Add Comment</button></div></div>`:""}
+ ${tab==="history"?(t.history||[]).map(h=>`<div class="item row"><span>${safe(h.text)} <span class="muted">· ${safe(uname(h.by)||"System")}</span></span><span class="muted">${fmt(h.at)}</span></div>`).join(""):""}
+ ${tab==="files"?filesTab(t):""}
+ ${tab==="links"?`${(t.links||[]).map(l=>`<div class="item"><span class="id" onclick="location.hash='#/ticket/${safe(l)}'">${safe(l)}</span> ${safe(T(l)?.summary||"")}</div>`).join("")||'<div class="empty">No linked tickets</div>'}${staff?`<div class="toolbar" style="margin-top:10px"><input id="lk" placeholder="IT-2026-000001"><button class="secondary" onclick="addLink('${safe(id)}')">Link (relates to)</button></div>`:""}`:""}</div>`;
+ let right=`<div class="panel"><h3>Details</h3><div class="dl">
+ <div>Status</div><div>${sel("status",STATUSES)}</div><div>Priority</div><div>${sel("priority",PRIOS)}</div>
+ <div>Type</div><div>${sel("type",TYPES)}</div><div>Category</div><div>${staff?`<select onchange="setField('${safe(id)}','category',this.value)">${opts(DB.settings.categories,t.category)}</select>`:safe(t.category)}</div>
+ <div>Impact</div><div>${sel("impact",LEVELS)}</div><div>Urgency</div><div>${sel("urgency",LEVELS)}</div>
+ <div>Assignee</div><div>${staff?`<select onchange="setField('${safe(id)}','assignee',this.value)">${uopts(DB.users.filter(u=>["Admin","Agent"].includes(u.role)&&u.active),t.assignee,"Unassigned")}</select>`:av(t.assignee)+safe(uname(t.assignee))}</div>
+ <div>Group</div><div>${safe(t.group||"-")}</div><div>Reporter</div><div>${av(t.reporter)}${safe(uname(t.reporter))}</div>
+ <div>Asset</div><div>${a?`<span class="id" onclick="assetDetail('${a.id}')">${safe(a.id)}</span> ${safe(a.name)}`:"-"}</div>
+ <div>Created</div><div>${fmt(t.created)}</div><div>Updated</div><div>${fmt(t.updated)}</div>${due?`<div>Due (est.)</div><div>${fmt(due)}</div>`:""}
+ <div>Tags</div><div>${(t.tags||[]).map(x=>`<span class="tag">${safe(x)}</span>`).join("")||"-"}</div><div>Watchers</div><div>${(t.watchers||[]).map(w=>safe(uname(w))).join(", ")||"-"}</div></div></div>
+ ${isStaff()?`<div class="panel"><h3>SLA (business hours)</h3>${slaRow("First response",s.resp)}${slaRow("Resolution",s.res)}${s.paused?'<div class="muted">⏸ Clock paused while Pending</div>':""}<div class="muted">Policy: ${safe(t.priority)} · ${fmtMin(DB.settings.sla[t.priority].resp)} / ${fmtMin(DB.settings.sla[t.priority].res)}</div></div>
+ ${t.approval?`<div class="panel"><h3>Change Approval</h3>${pill(t.approval.status)}${t.approval.by?`<div class="muted">by ${safe(uname(t.approval.by))} · ${fmt(t.approval.at)}</div>`:""}${["Admin","Manager"].includes(m.role)&&t.approval.status==="Pending"?`<div class="actions" style="justify-content:flex-start"><button class="success sm" onclick="approve('${safe(id)}',true)">Approve</button><button class="danger sm" onclick="approve('${safe(id)}',false)">Reject</button></div>`:""}</div>`:""}
+ <div class="panel"><h3>Time tracking</h3><div>Total logged: <b>${fmtMin(t.timeSpent||0)}</b></div>${staff?`<div class="toolbar" style="margin-top:8px"><input id="lt" type="number" min="1" placeholder="minutes" style="width:100px"><button class="secondary sm" onclick="logTime('${safe(id)}')">Log time</button></div>`:""}</div>`:""}`;
+ $("content").innerHTML=`<div class="muted" style="margin-bottom:8px"><a class="id" href="#/tickets">‹ Tickets</a></div><div class="tview"><div>${left}</div><div>${right}</div></div>`}
+
+/* ============ MY WORK / BOARD / APPROVALS ============ */
+function mywork(){let mine=DB.tickets.filter(t=>t.assignee===DB.meId),op=mine.filter(isOpen);
+ $("content").innerHTML=heading("My Work","Tickets assigned to "+safe(me().name))+`<div class="cards">${card("ASSIGNED TO ME",op.length,"","tickets?f=mine")}${card("IN PROGRESS",op.filter(t=>t.status==="In Progress").length)}${card("PENDING",op.filter(t=>t.status==="Pending").length)}${card("SLA RISK",op.filter(t=>["warn","breached"].includes(slaState(t))).length,"red")}${card("RESOLVED",mine.filter(t=>!isOpen(t)).length,"green")}</div>`+
+ tbl(["KEY","SUMMARY","PRIORITY","STATUS","SLA","ACTION"],op.sort((a,b)=>slaInfo(a).res.left-slaInfo(b).res.left).map(t=>`<tr><td><span class="id" onclick="location.hash='#/ticket/${safe(t.id)}'">${safe(t.id)}</span></td><td>${safe(t.summary)}</td><td>${pill(t.priority)}</td><td>${pill(t.status)}</td><td>${slaBadge(t)}</td><td><button class="secondary sm" onclick="location.hash='#/ticket/${safe(t.id)}'">Open</button></td></tr>`).join(""),"Nothing assigned 🎉")}
+function board(_,q,keep){if(!keep)S.bm=S.bm||"all";let list=DB.tickets.filter(t=>S.bm!=="me"||t.assignee===DB.meId);
+ $("content").innerHTML=heading("Kanban Board","Drag & drop cards to change status",`<select onchange="S.bm=this.value;board(0,0,1)"><option value="all">All tickets</option><option value="me" ${S.bm==="me"?"selected":""}>Only mine</option></select>`)+
+ `<div class="board">${STATUSES.map(s=>{let c=list.filter(t=>t.status===s&&(s!=="Closed"||Date.now()-new Date(t.closedAt||t.updated)<7*86400000));return `<div class="col" data-s="${s}" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropCard(event,'${s}')"><h4><span>${s.toUpperCase()}</span><span>${c.length}</span></h4>${c.map(t=>`<div class="kcard ${t.priority}" draggable="${canWork()}" ondragstart="event.dataTransfer.setData('t','${safe(t.id)}')" onclick="location.hash='#/ticket/${safe(t.id)}'"><div class="row"><span class="id">${safe(t.id)}</span>${pill(t.type)}</div><div style="margin:6px 0">${safe(t.summary)}</div><div class="row"><span>${av(t.assignee)}</span>${slaBadge(t)}</div></div>`).join("")}</div>`}).join("")}</div>`}
+function dropCard(e,s){e.preventDefault();e.currentTarget.classList.remove("over");if(!canWork())return toast("No permission");let id=e.dataTransfer.getData("t"),t=T(id);if(!t||t.status===s)return;if(s==="Resolved"){return resolveModal(id,()=>{board(0,0,1)})}setStatus(t,s,DB.meId);audit("Moved to "+s,id);save();board(0,0,1);renderHeader()}
+function approvalsPage(){let list=DB.tickets.filter(t=>t.approval);
+ $("content").innerHTML=heading("Change Approvals","Review change requests (CAB)")+tbl(["KEY","SUMMARY","REQUESTER","PRIORITY","APPROVAL","ACTION"],list.map(t=>`<tr><td><span class="id" onclick="location.hash='#/ticket/${safe(t.id)}'">${safe(t.id)}</span></td><td>${safe(t.summary)}</td><td>${safe(uname(t.reporter))}</td><td>${pill(t.priority)}</td><td>${pill(t.approval.status)}</td><td>${t.approval.status==="Pending"?`<button class="success sm" onclick="approve('${safe(t.id)}',true)">Approve</button> <button class="danger sm" onclick="approve('${safe(t.id)}',false)">Reject</button>`:""}</td></tr>`).join(""),"No change requests")}
+
+/* ============ ASSETS ============ */
+function assetsPage(_,q,keep){if(!keep)S.as={q:"",st:"",ty:""};let L=S.as,staff=canWork();
+ let wr=a=>a.warranty?(new Date(a.warranty)-Date.now())/86400000:null;
+ let list=DB.assets.filter(a=>(!L.st||a.status===L.st)&&(!L.ty||a.type===L.ty)&&[a.id,a.name,a.serial,uname(a.owner),a.location].join(" ").toLowerCase().includes(L.q.toLowerCase()));
+ $("content").innerHTML=heading("Asset Management","IT equipment inventory & warranty",staff?'<button class="primary" onclick="assetForm()">＋ Add Asset</button>':"")+
+ `<div class="cards">${card("TOTAL",DB.assets.length)}${card("ASSIGNED",DB.assets.filter(a=>a.status==="Assigned").length)}${card("AVAILABLE",DB.assets.filter(a=>a.status==="Available").length,"green")}${card("UNDER REPAIR",DB.assets.filter(a=>a.status==="Repair").length,"amber")}${card("WARRANTY ≤ 60 DAYS",DB.assets.filter(a=>wr(a)!==null&&wr(a)<=60&&a.status!=="Retired").length,"red")}</div>
+ <div class="toolbar"><input type="search" class="grow" id="asq" placeholder="Search asset, serial, owner, location…" value="${safe(L.q)}" oninput="S.as.q=this.value;assetsPage(0,0,1);refocus('asq')"><select onchange="S.as.st=this.value;assetsPage(0,0,1)"><option value="">All Status</option>${opts(["Available","Assigned","Repair","Retired"],L.st)}</select><select onchange="S.as.ty=this.value;assetsPage(0,0,1)"><option value="">All Types</option>${opts(["Laptop","Desktop","Monitor","Printer","Server","Network","Mobile","Other"],L.ty)}</select><button class="secondary" onclick="csv('assets.csv',[['ID','Name','Type','Serial','Owner','Status','Location','Purchase','Warranty'],...DB.assets.map(a=>[a.id,a.name,a.type,a.serial,a.owner?uname(a.owner):'',a.status,a.location,a.purchase,a.warranty])])">⬇ CSV</button></div>`+
+ tbl(["ID","NAME","TYPE","SERIAL","OWNER","STATUS","LOCATION","WARRANTY","TICKETS"],list.map(a=>{let w=wr(a),wt=a.warranty?(w<0?`<span class="pill Critical">Expired</span>`:w<=60?`<span class="pill High">${Math.ceil(w)}d left</span>`:fmtD(a.warranty)):"-";return `<tr><td><span class="id" onclick="assetDetail('${a.id}')">${safe(a.id)}</span></td><td>${safe(a.name)}</td><td>${safe(a.type)}</td><td>${safe(a.serial)}</td><td>${a.owner?safe(uname(a.owner)):"-"}</td><td>${pill(a.status)}</td><td>${safe(a.location||"-")}</td><td>${wt}</td><td>${DB.tickets.filter(t=>t.assetId===a.id).length}</td></tr>`}).join(""),"No assets")}
+function assetDetail(id){let a=A(id);if(!a)return;let tk=DB.tickets.filter(t=>t.assetId===id);
+ openModal(a.id+" · "+a.name,`<div class="dl" style="grid-template-columns:120px 1fr"><div>Type</div><div>${safe(a.type)}</div><div>Serial</div><div>${safe(a.serial)}</div><div>Owner</div><div>${a.owner?safe(uname(a.owner)):"-"}</div><div>Status</div><div>${pill(a.status)}</div><div>Location</div><div>${safe(a.location||"-")}</div><div>Purchased</div><div>${fmtD(a.purchase)}</div><div>Warranty until</div><div>${fmtD(a.warranty)}</div></div><h3 style="margin-top:16px">Ticket history (${tk.length})</h3>${tk.map(t=>`<div class="item row"><span><span class="id" onclick="location.hash='#/ticket/${safe(t.id)}'">${safe(t.id)}</span> ${safe(t.summary)}</span>${pill(t.status)}</div>`).join("")||'<div class="muted">No tickets</div>'}${canWork()?`<div class="actions"><button class="danger" onclick="delAsset('${a.id}')">Delete</button><button class="primary" onclick="assetForm('${a.id}')">Edit</button></div>`:""}`)}
+function assetForm(id){let a=id?A(id):{name:"",type:"Laptop",serial:"",owner:"",status:"Available",location:"",purchase:"",warranty:""};
+ openModal(id?"Edit Asset":"Add Asset",`<form id="af"><div class="field"><label>Name *</label><input name="name" required value="${safe(a.name)}"></div><div class="grid2"><div class="field"><label>Type</label><select name="type">${opts(["Laptop","Desktop","Monitor","Printer","Server","Network","Mobile","Other"],a.type)}</select></div><div class="field"><label>Serial *</label><input name="serial" required value="${safe(a.serial)}"></div><div class="field"><label>Owner</label><select name="owner">${uopts(DB.users.filter(u=>u.active),a.owner,"— none —")}</select></div><div class="field"><label>Status</label><select name="status">${opts(["Available","Assigned","Repair","Retired"],a.status)}</select></div><div class="field"><label>Location</label><input name="location" value="${safe(a.location)}"></div><div class="field"><label>Purchase date</label><input type="date" name="purchase" value="${safe(a.purchase)}"></div><div class="field"><label>Warranty until</label><input type="date" name="warranty" value="${safe(a.warranty)}"></div></div><div class="actions"><button type="button" class="secondary" onclick="closeModal()">Cancel</button><button class="primary">Save</button></div></form>`);
+ $("af").onsubmit=e=>{e.preventDefault();let f=Object.fromEntries(new FormData(e.target));if(id)Object.assign(A(id),f);else DB.assets.push({id:nextAsset(),...f});audit(id?"Edited asset":"Added asset",id||f.name);save();closeModal();assetsPage(0,0,1);toast("Asset saved")}}
+function delAsset(id){if(!confirm("Delete asset "+id+"?"))return;DB.assets=DB.assets.filter(a=>a.id!==id);DB.tickets.forEach(t=>{if(t.assetId===id)t.assetId=""});audit("Deleted asset",id);save();closeModal();assetsPage(0,0,1)}
+
+/* ============ TEAMS / SLA ============ */
+function teamsPage(){let staff=DB.users.filter(u=>["Admin","Agent"].includes(u.role)&&u.active);
+ $("content").innerHTML=heading("Teams & Workload","Agent capacity and performance")+`<div class="grid3">${GROUPS.map(g=>{let m=staff.filter(u=>u.group===g);return `<div class="panel"><h3>${g}</h3>${m.map(u=>`<div class="item row"><span>${av(u.id)}${safe(u.name)}</span><b>${DB.tickets.filter(t=>t.assignee===u.id&&isOpen(t)).length} open</b></div>`).join("")||'<div class="muted">No members</div>'}</div>`}).join("")}</div>`+
+ tbl(["AGENT","GROUP","OPEN","IN PROGRESS","PENDING","RESOLVED","SLA BREACHED","LOAD"],staff.map(u=>{let mine=DB.tickets.filter(t=>t.assignee===u.id),o=mine.filter(isOpen);return `<tr><td>${av(u.id)}${safe(u.name)}</td><td>${safe(u.group||"-")}</td><td>${o.length}</td><td>${o.filter(t=>t.status==="In Progress").length}</td><td>${o.filter(t=>t.status==="Pending").length}</td><td>${mine.length-o.length}</td><td>${o.filter(t=>slaState(t)==="breached").length}</td><td style="width:140px">${bar(o.length/8*100,o.length>=6?"red":o.length>=4?"amber":"green")}</td></tr>`}).join(""))}
+function slaPage(){let act=DB.tickets.filter(isOpen).sort((a,b)=>slaInfo(a).res.left-slaInfo(b).res.left),c=DB.settings;
+ let fin=DB.tickets.filter(t=>!isOpen(t)),met=fin.filter(t=>slaInfo(t).res.st==="met").length;
+ $("content").innerHTML=heading("SLA Monitor",`Business hours ${String(c.bizStart).padStart(2,"0")}:00–${String(c.bizEnd).padStart(2,"0")}:00 · ${c.workdays.map(d=>["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d]).join(", ")} · clock pauses on Pending`)+
+ `<div class="cards">${card("ACTIVE",act.length)}${card("BREACHED",act.filter(t=>slaState(t)==="breached").length,"red")}${card("AT RISK",act.filter(t=>slaState(t)==="warn").length,"amber")}${card("COMPLIANCE",fin.length?Math.round(met/fin.length*100)+"%":"-","green")}</div>
+ <div class="panel"><h3>SLA Policy ${me().role==="Admin"?'<a class="id" style="font-size:12px;margin-left:8px" href="#/settings">edit</a>':""}</h3>${PRIOS.map(p=>`<div class="item row">${pill(p)}<b>Response ${fmtMin(c.sla[p].resp)} / Resolution ${fmtMin(c.sla[p].res)}</b></div>`).join("")}</div>`+
+ tbl(["KEY","SUMMARY","PRIORITY","STATUS","RESPONSE","RESOLUTION","DUE (EST.)"],act.map(t=>{let s=slaInfo(t),d=dueDate(t),b=x=>`<div style="min-width:120px">${bar(x.pct,x.st==="breached"?"red":x.st==="warn"?"amber":x.st==="met"?"green":"")}<div class="muted">${x.st==="met"?"met":x.st==="breached"?"breached +"+fmtMin(-x.left):fmtMin(x.left)+" left"}</div></div>`;return `<tr><td><span class="id" onclick="location.hash='#/ticket/${safe(t.id)}'">${safe(t.id)}</span></td><td>${safe(t.summary)}</td><td>${pill(t.priority)}</td><td>${pill(t.status)}</td><td>${b(s.resp)}</td><td>${b(s.res)}</td><td>${d?fmt(d):s.paused?"Paused":"-"}</td></tr>`}).join(""),"No active tickets")}
+
+/* ============ KNOWLEDGE BASE ============ */
+function kbPage(_,q,keep){if(!keep)S.kb={q:q.q||"",c:""};let L=S.kb,staff=isStaff();
+ let list=DB.articles.filter(a=>(staff||a.status==="Published")&&(!L.c||a.category===L.c)&&(a.title+" "+a.body+" "+a.category).toLowerCase().includes(L.q.toLowerCase()));
+ $("content").innerHTML=heading("Knowledge Base","คู่มือและวิธีแก้ปัญหา IT",canWork()?'<button class="primary" onclick="articleForm()">＋ Add Article</button>':"")+
+ `<div class="toolbar"><input type="search" class="grow" id="kq" placeholder="Search articles…" value="${safe(L.q)}" oninput="S.kb.q=this.value;kbPage(0,0,1);refocus('kq')"><select onchange="S.kb.c=this.value;kbPage(0,0,1)"><option value="">All categories</option>${opts(DB.settings.categories,L.c)}</select></div>
+ <div class="grid2">${list.map(a=>`<div class="panel"><div class="row"><span class="tag">${safe(a.category)}</span>${staff?pill(a.status):""}</div><h3 style="margin-top:8px">${safe(a.title)}</h3><p class="muted" style="font-size:13px">${safe(a.body.slice(0,110))}…</p><div class="row"><button class="secondary sm" onclick="viewArticle('${a.id}')">Read</button><span class="muted">👁 ${a.views} · 👍 ${a.helpful}</span></div></div>`).join("")||'<div class="empty">No articles</div>'}</div>`}
+function viewArticle(id,fromTicket,silent){let a=DB.articles.find(x=>x.id===id);if(!a)return;if(!silent){a.views++;save()}
+ openModal(a.title,`<div class="muted" style="margin-bottom:10px">${safe(a.category)} · updated ${fmtD(a.updated)}</div><div style="line-height:1.7">${nl(a.body)}</div><div class="actions" style="justify-content:space-between"><span>Helpful? <button class="secondary sm" onclick="vote('${id}',1)">👍 ${a.helpful}</button> <button class="secondary sm" onclick="vote('${id}',0)">👎 ${a.nothelp}</button></span>${canWork()?`<span><button class="danger sm" onclick="delArticle('${id}')">Delete</button> <button class="primary sm" onclick="articleForm('${id}')">Edit</button></span>`:""}</div>`)}
+function vote(id,up){let a=DB.articles.find(x=>x.id===id);up?a.helpful++:a.nothelp++;save();toast("Thanks for your feedback");viewArticle(id,0,true)}
+function articleForm(id){let a=id?DB.articles.find(x=>x.id===id):{title:"",category:DB.settings.categories[0],body:"",status:"Published"};
+ openModal(id?"Edit Article":"New Article",`<form id="kf"><div class="field"><label>Title *</label><input name="title" required value="${safe(a.title)}"></div><div class="grid2"><div class="field"><label>Category</label><select name="category">${opts(DB.settings.categories,a.category)}</select></div><div class="field"><label>Status</label><select name="status">${opts(["Published","Draft"],a.status)}</select></div></div><div class="field"><label>Solution / Steps *</label><textarea name="body" required style="min-height:180px">${safe(a.body)}</textarea></div><div class="actions"><button type="button" class="secondary" onclick="closeModal()">Cancel</button><button class="primary">Save</button></div></form>`);
+ $("kf").onsubmit=e=>{e.preventDefault();let f=Object.fromEntries(new FormData(e.target));if(id)Object.assign(DB.articles.find(x=>x.id===id),f,{updated:iso()});else DB.articles.push({id:"KB-"+String(DB.articles.length+1+Math.floor(Math.random()*900)).padStart(3,"0"),...f,views:0,helpful:0,nothelp:0,updated:iso()});audit("Saved article",f.title);save();closeModal();kbPage(0,0,1)}}
+function delArticle(id){if(!confirm("Delete article?"))return;DB.articles=DB.articles.filter(a=>a.id!==id);audit("Deleted article",id);save();closeModal();kbPage(0,0,1)}
+
+/* ============ REPORTS ============ */
+function reportsPage(_,q,keep){if(!keep)S.rp=S.rp||30;let days=S.rp,since=days?Date.now()-days*86400000:0,tk=DB.tickets.filter(t=>+new Date(t.created)>=since),fin=tk.filter(t=>!isOpen(t));
+ let avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0,resp=tk.filter(t=>t.firstResponseAt).map(t=>slaInfo(t).resp),ress=fin.map(t=>slaInfo(t).res);
+ let compl=ress.length?Math.round(ress.filter(r=>r.st==="met").length/ress.length*100):0,rc=resp.length?Math.round(resp.filter(r=>r.st==="met").length/resp.length*100):0;
+ let rated=tk.filter(t=>t.csat),cs=rated.length?(avg(rated.map(t=>t.csat.rating))).toFixed(1):"-",reo=tk.filter(t=>t.reopened).length;
+ let by=(arr,f)=>[...new Set(arr.map(f))].map(k=>[k,tk.filter(t=>f(t)===k).length]).sort((a,b)=>b[1]-a[1]);
+ let agents=DB.users.filter(u=>["Admin","Agent"].includes(u.role));
+ $("content").innerHTML=heading("Reports & Analytics","Performance of the IT service desk",`<select onchange="S.rp=Number(this.value);reportsPage(0,0,1)">${[[7,"Last 7 days"],[30,"Last 30 days"],[90,"Last 90 days"],[0,"All time"]].map(([v,l])=>`<option value="${v}" ${v===days?"selected":""}>${l}</option>`).join("")}</select> <button class="secondary" onclick="window.print()">🖨 Print / PDF</button>`)+
+ `<div class="cards">${card("TICKETS",tk.length)}${card("RESOLVED",fin.length,"green")}${card("RESOLUTION SLA",compl+"%",compl>=90?"green":"amber")}${card("RESPONSE SLA",rc+"%",rc>=90?"green":"amber")}${card("AVG FIRST RESPONSE",fmtMin(avg(resp.map(r=>r.el))))}${card("AVG RESOLUTION",fmtMin(avg(ress.map(r=>r.el))))}${card("CSAT",cs)}${card("REOPENED",reo)}</div>
+ <div class="grid2"><div class="panel"><h3>By Type</h3>${donut(TYPES.map((x,i)=>[x,tk.filter(t=>t.type===x).length,["#e5484d","#2684ff","#f59e0b","#6554c0"][i]]))}</div><div class="panel"><h3>By Priority</h3>${hbars(PRIOS.map(p=>[p,tk.filter(t=>t.priority===p).length]))}</div></div>
+ <div class="grid2"><div class="panel"><h3>By Category</h3>${hbars(by(tk,t=>t.category))}</div><div class="panel"><h3>By Status</h3>${hbars(STATUSES.map(s=>[s,tk.filter(t=>t.status===s).length]))}</div></div>`+
+ `<div class="panel"><h3>Agent Performance</h3>${tbl(["AGENT","ASSIGNED","RESOLVED","AVG RESOLUTION","SLA BREACHED","TIME LOGGED","CSAT"],agents.map(u=>{let m=tk.filter(t=>t.assignee===u.id),f=m.filter(t=>!isOpen(t)),r=m.filter(t=>t.csat);return `<tr><td>${av(u.id)}${safe(u.name)}</td><td>${m.length}</td><td>${f.length}</td><td>${f.length?fmtMin(avg(f.map(t=>slaInfo(t).res.el))):"-"}</td><td>${m.filter(t=>slaState(t)==="breached").length}</td><td>${fmtMin(m.reduce((a,t)=>a+(t.timeSpent||0),0))}</td><td>${r.length?avg(r.map(t=>t.csat.rating)).toFixed(1):"-"}</td></tr>`}).join(""))}</div>
+ <div class="actions" style="justify-content:flex-start"><button class="primary" onclick="S.list={f:'all',type:'',status:'',prio:'',assignee:'',q:'',sort:'new',page:1,sel:[]};exportTickets()">⬇ Export all tickets (CSV)</button></div>`}
+
+/* ============ USERS / SETTINGS / AUDIT ============ */
+function usersPage(){$("content").innerHTML=heading("User Management","Accounts and roles ("+DB.users.length+" users)",'<button class="primary" onclick="userForm()">＋ Add User</button>')+tbl(["NAME","EMAIL","ROLE","DEPARTMENT","GROUP","STATUS","ACTION"],DB.users.map(u=>`<tr><td>${av(u.id)}${safe(u.name)}</td><td>${safe(u.email)}</td><td>${safe(u.role)}</td><td>${safe(u.department)}</td><td>${safe(u.group||"-")}</td><td>${u.active?'<span class="pill Resolved">Active</span>':'<span class="pill Closed">Disabled</span>'}</td><td><button class="secondary sm" onclick="userForm('${u.id}')">Edit</button></td></tr>`).join(""))}
+function userForm(id){let u=id?U(id):{name:"",email:"",role:"Employee",department:"",group:"",active:true};
+ openModal(id?"Edit User":"Add User",`<form id="uf"><div class="field"><label>Name *</label><input name="name" required value="${safe(u.name)}"></div><div class="field"><label>Email *</label><input name="email" type="email" required value="${safe(u.email)}"></div><div class="grid2"><div class="field"><label>Role</label><select name="role">${opts(ROLES,u.role)}</select></div><div class="field"><label>Department</label><input name="department" value="${safe(u.department)}"></div><div class="field"><label>Support group</label><select name="group"><option value="">—</option>${opts(GROUPS,u.group)}</select></div><div class="field"><label>Status</label><select name="active"><option value="1" ${u.active?"selected":""}>Active</option><option value="0" ${u.active?"":"selected"}>Disabled</option></select></div></div><div class="actions"><button type="button" class="secondary" onclick="closeModal()">Cancel</button><button class="primary">Save</button></div></form>`);
+ $("uf").onsubmit=e=>{e.preventDefault();let f=Object.fromEntries(new FormData(e.target));f.active=f.active==="1";if(id){if(id===DB.meId&&!f.active)return toast("Cannot disable yourself");Object.assign(U(id),f)}else DB.users.push({id:"U"+(Date.now().toString(36)),...f});audit(id?"Edited user":"Created user",f.name);save();closeModal();usersPage();renderHeader()}}
+function settingsPage(){let c=DB.settings;
+ $("content").innerHTML=heading("Settings","Business hours, SLA policy, categories, templates and data")+
+ `<div class="grid2"><div class="panel"><h3>Business hours</h3><div class="grid2"><div class="field"><label>Start (hour)</label><input id="sBs" type="number" min="0" max="23" value="${c.bizStart}"></div><div class="field"><label>End (hour)</label><input id="sBe" type="number" min="1" max="24" value="${c.bizEnd}"></div></div><div class="field"><label>Working days</label><div>${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map((d,i)=>`<label style="margin-right:10px"><input type="checkbox" class="wd" value="${i}" ${c.workdays.includes(i)?"checked":""}> ${d}</label>`).join("")}</div></div>
+ <div class="grid2"><div class="field"><label>Auto-close resolved after (days)</label><input id="sAc" type="number" min="1" value="${c.autoCloseDays}"></div><div class="field"><label>SLA warning at (%)</label><input id="sWp" type="number" min="1" max="99" value="${c.warnPct}"></div></div></div>
+ <div class="panel"><h3>SLA policy (business minutes)</h3>${PRIOS.map(p=>`<div class="row" style="margin-bottom:8px">${pill(p)}<span>Response <input style="width:80px" type="number" min="1" id="r_${p}" value="${c.sla[p].resp}"> Resolution <input style="width:90px" type="number" min="1" id="s_${p}" value="${c.sla[p].res}"></span></div>`).join("")}<div class="muted">60 = 1 hour · working day = ${c.bizEnd-c.bizStart} hours</div></div></div>
+ <div class="grid2"><div class="panel"><h3>Categories (one per line)</h3><textarea id="sCat" style="width:100%;min-height:150px">${safe(c.categories.join("\n"))}</textarea></div>
+ <div class="panel"><h3>Canned responses</h3>${c.canned.map((x,i)=>`<div class="item row"><span><b>${safe(x.title)}</b><div class="muted">${safe(x.text)}</div></span><button class="danger sm" onclick="delCanned(${i})">×</button></div>`).join("")}<div class="field" style="margin-top:10px"><input id="cT" placeholder="Title"><textarea id="cX" placeholder="Text" style="margin-top:6px"></textarea><button class="secondary" style="margin-top:6px" onclick="addCanned()">Add response</button></div></div></div>
+ <div class="actions" style="justify-content:flex-start"><button class="primary" onclick="saveSettings()">💾 Save settings</button></div>
+ <div class="panel"><h3>Data</h3><div class="toolbar"><button class="secondary" onclick="download('itsm-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(DB,null,1),'application/json')">⬇ Backup (JSON)</button><label class="secondary" style="padding:9px 13px;border-radius:5px;cursor:pointer;border:1px solid var(--line)">⬆ Restore<input type="file" accept=".json" hidden onchange="restore(this.files[0])"></label><button class="danger" onclick="resetDemo()">Reset to demo data</button></div><div class="muted">Data is stored in this browser (localStorage). Attached files are stored in IndexedDB and are NOT included in the JSON backup.</div></div>`}
+function saveSettings(){let c=DB.settings,bs=Number($("sBs").value),be=Number($("sBe").value);if(be<=bs)return toast("End hour must be after start hour");
+ c.bizStart=bs;c.bizEnd=be;c.workdays=[...document.querySelectorAll(".wd:checked")].map(x=>Number(x.value));if(!c.workdays.length)return toast("Select at least one working day");
+ c.autoCloseDays=Number($("sAc").value)||3;c.warnPct=Number($("sWp").value)||75;PRIOS.forEach(p=>{c.sla[p]={resp:Number($("r_"+p).value)||1,res:Number($("s_"+p).value)||1}});
+ c.categories=$("sCat").value.split("\n").map(x=>x.trim()).filter(Boolean);audit("Updated settings");save();toast("Settings saved")}
+function addCanned(){let t=$("cT").value.trim(),x=$("cX").value.trim();if(!t||!x)return;DB.settings.canned.push({title:t,text:x});save();settingsPage()}
+function delCanned(i){DB.settings.canned.splice(i,1);save();settingsPage()}
+function restore(f){if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!d.tickets||!d.users)throw 0;DB=d;save();toast("Restored");renderHeader();location.hash="#/dashboard";route()}catch(e){toast("Invalid backup file")}};r.readAsText(f)}
+function resetDemo(){if(!confirm("Reset ALL data to demo data?"))return;DB.tickets.forEach(t=>(t.files||[]).forEach(f=>fileDel(f.id)));seed();renderHeader();toast("Demo data restored");location.hash="#/dashboard";route()}
+function auditPage(_,q,keep){if(!keep)S.aq="";let l=DB.logs.filter(x=>(x.action+" "+x.ref+" "+uname(x.by)).toLowerCase().includes(S.aq.toLowerCase()));
+ $("content").innerHTML=heading("Audit Log","System activity history (last 1000 events)",'<button class="secondary" onclick="csv(\'audit-log.csv\',[[\'Time\',\'User\',\'Action\',\'Ref\'],...DB.logs.map(l=>[l.at,uname(l.by),l.action,l.ref])])">⬇ CSV</button> <button class="danger" onclick="if(confirm(\'Clear all logs?\')){DB.logs=[];save();auditPage()}">Clear</button>')+`<div class="toolbar"><input type="search" class="grow" id="aq" placeholder="Filter…" value="${safe(S.aq)}" oninput="S.aq=this.value;auditPage(0,0,1);refocus('aq')"></div>`+tbl(["TIME","USER","ACTION","REF"],l.slice(0,200).map(x=>`<tr><td>${fmt(x.at)}</td><td>${safe(uname(x.by))}</td><td>${safe(x.action)}</td><td>${safe(x.ref)}</td></tr>`).join(""),"No logs")}
+
+/* ============ GLOBAL ============ */
+$("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();if(e.key==="/"&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){e.preventDefault();$("gs").focus()}});
+document.addEventListener("click",e=>{if(!e.target.closest(".notif")&&!e.target.closest(".iconbtn"))$("notif").style.display="none"});
+document.addEventListener("paste",e=>{let fs=[...(e.clipboardData?.files||[])];if(!fs.length)return;
+ if($("tf")){e.preventDefault();pickFiles(fs)}
+ else if(location.hash.startsWith("#/ticket/")){e.preventDefault();pickFiles(fs,location.hash.split("/")[2].split("?")[0])}});
+setInterval(()=>{let ae=document.activeElement;if($("modal").style.display==="flex"||(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))||[...document.querySelectorAll("textarea")].some(x=>x.value))return;autoClose();renderHeader();let h=location.hash;if(!/#\/(settings|board)/.test(h))route(true)},60000);
+init();
+</script>
+</body>
+</html>
